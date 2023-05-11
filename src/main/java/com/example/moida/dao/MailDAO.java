@@ -32,11 +32,12 @@ public class MailDAO {
         return sb.toString();
     }
 
+    // 메일 내용 생성
     public String makeHtml(String type, String code) {
         String html = null;
-        switch(type) {
+        switch (type) {
             case "findPw":
-                html = "<p>새로운 비밀번호는 <strong>\" + code + \"</strong>입니다.</p>";
+                html = "<p>새로운 비밀번호는 <strong>" + code + "</strong>입니다.</p>";
                 break;
         }
         return html;
