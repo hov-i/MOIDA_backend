@@ -1,4 +1,4 @@
-package com.example.moida.utill;
+package com.example.moida.common;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
