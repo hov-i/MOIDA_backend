@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 public class Common {
     final static String ORACLE_URL = "jdbc:oracle:thin:@localhost:1521:xe";
-    final static String ORACLE_ID = "MOIDA_DATA";
-    final static String ORACLE_PWD = "9519";
+    final static String ORACLE_ID = "MOIDA";
+    final static String ORACLE_PWD = "1234";
     final static String ORACLE_DRV = "oracle.jdbc.driver.OracleDriver";
 
     public static Connection getConnection() {
