@@ -7,17 +7,17 @@ import java.sql.Date;
 
 @Getter
 @Setter
-public class User_infoVO {
+public class UserInfoVO {
     private int cnt;
-    private String user_id;
+    private String userId;
     private String pw;
     private String newPw;
     private String email;
     private String newEmail;
     private String phone;
     private String newPhone;
-    private String user_name;
-    private String pw_confirm;
+    private String userName;
+    private String pwConfirm;
     private Date joinDate;
     private Date withdrawDate;
     private Date expireDate;

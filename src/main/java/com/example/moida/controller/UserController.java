@@ -1,12 +1,11 @@
 package com.example.moida.controller;
 
 import com.example.moida.dao.MailDAO;
-import com.example.moida.dao.User_infoDAO;
+import com.example.moida.dao.UserInfoDAO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -21,18 +20,18 @@ public class UserController {
     public ResponseEntity<Boolean> memberRegister(@RequestBody Map<String, String> regData) {
         String userName = regData.get("userName");
         String pw = regData.get("pw");
-        String pw_confirm = regData.get("pw_confirm");
+        String pwConfirm = regData.get("pwConfirm");
         String email = regData.get("email");
         String phone = regData.get("phone");
         String nickname = regData.get("nickname");
-        User_infoDAO dao = new User_infoDAO();
+        UserInfoDAO dao = new UserInfoDAO();
 
         // 비밀번호 확인과 동일하지 않으면 안 받음
-        if (!pw.equals(pw_confirm)) {
+        if (!pw.equals(pwConfirm)) {
             return new ResponseEntity<>(false, HttpStatus.OK);
         }
 
-        boolean isTrue = dao.memberRegister(userName, pw, pw_confirm, email, phone, nickname);
+        boolean isTrue = dao.memberRegister(userName, pw, pwConfirm, email, phone, nickname);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
@@ -41,7 +40,7 @@ public class UserController {
     public ResponseEntity<Boolean> memberLogin(@RequestBody Map<String, String> loginData) {
         String userName = loginData.get("userName");
         String pw = loginData.get("pw");
-        User_infoDAO dao = new User_infoDAO();
+        UserInfoDAO dao = new UserInfoDAO();
         boolean result = dao.loginCheck(userName, pw);
         return new ResponseEntity<>(result, HttpStatus.OK);
 
@@ -50,7 +49,7 @@ public class UserController {
     // GET : 가입 여부 확인
     @GetMapping("/check")
     public ResponseEntity<Boolean> memberCheck(@RequestParam String userName) {
-        User_infoDAO dao = new User_infoDAO();
+        UserInfoDAO dao = new UserInfoDAO();
         boolean isTrue = dao.regMemberCheck(userName);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
@@ -60,7 +59,7 @@ public class UserController {
     public ResponseEntity<Boolean> updatePhone(@RequestBody Map<String, String> phoneData) {
         String userName = phoneData.get("userName");
         String newPhone = phoneData.get("newPhone");
-        User_infoDAO dao = new User_infoDAO();
+        UserInfoDAO dao = new UserInfoDAO();
         boolean isTrue = dao.updatePhone(userName, newPhone);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
@@ -103,7 +102,7 @@ public class UserController {
     public ResponseEntity<Boolean> updateEmail(@RequestBody Map<String, String> phoneData) {
         String userName = phoneData.get("userName");
         String newEmail = phoneData.get("newEmail");
-        User_infoDAO dao = new User_infoDAO();
+        UserInfoDAO dao = new UserInfoDAO();
         boolean isTrue = dao.updatePhone(userName, newEmail);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
@@ -113,7 +112,7 @@ public class UserController {
     public ResponseEntity<Boolean> updatePassword(@RequestBody Map<String, String> phoneData) {
         String userName = phoneData.get("userName");
         String newPw = phoneData.get("newPw");
-        User_infoDAO dao = new User_infoDAO();
+        UserInfoDAO dao = new UserInfoDAO();
         boolean isTrue = dao.updatePhone(userName, newPw);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
@@ -123,7 +122,7 @@ public class UserController {
     public ResponseEntity<Boolean> updateNickname(@RequestBody Map<String, String> phoneData) {
         String userName = phoneData.get("userName");
         String newNickname = phoneData.get("newNickname");
-        User_infoDAO dao = new User_infoDAO();
+        UserInfoDAO dao = new UserInfoDAO();
         boolean isTrue = dao.updatePhone(userName, newNickname);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
@@ -133,7 +132,7 @@ public class UserController {
     public ResponseEntity<Boolean> memberDelete(@RequestBody Map<String, String> delData) {
         String userName = delData.get("userName");
         String pw = delData.get("pw");
-        User_infoDAO dao = new User_infoDAO();
+        UserInfoDAO dao = new UserInfoDAO();
         boolean isTrue = dao.memberDelete(userName, pw);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
