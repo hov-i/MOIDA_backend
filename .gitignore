@@ -41,7 +41,4 @@ out/
 ### Email ###
 
 /resources/*.properties
-Common.java
-/src/main/java/com/example/moida/common/Common.java
-/src/main/java/com/example/moida/common/
 application.properties
