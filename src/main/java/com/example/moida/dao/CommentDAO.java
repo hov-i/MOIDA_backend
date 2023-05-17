@@ -1,15 +1,15 @@
 package com.example.moida.dao;
 
+import com.example.moida.common.Common;
+import com.example.moida.vo.CommentVO;
 import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.example.moida.common.Common;
-import com.example.moida.vo.CommentVO;
 
 
 @Repository
@@ -18,6 +18,7 @@ public class CommentDAO {
     Statement stmt = null;
     PreparedStatement pstmt = null;
     ResultSet rSet = null;
+
 
     public List<CommentVO> getCommentsByPostId(int postId) {
         List<CommentVO> list = new ArrayList<>();
