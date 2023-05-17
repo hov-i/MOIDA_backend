@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Scanner;
 
-public class User_infoDAO {
+public class UserInfoDAO {
     Connection conn = null;
     Statement stmt = null;
     PreparedStatement pStmt = null;
@@ -19,10 +19,10 @@ public class User_infoDAO {
 
 
     //회원 가입(OK)
-    public boolean memberRegister(String userName, String pw, String pw_confirm, String email, String phone, String nickname) {
+    public boolean memberRegister(String userName, String pw, String pwConfirm, String email, String phone, String nickname) {
         int result = 0;
         boolean success = false;
-        if(pw.equals(pw_confirm)) { // 비밀번호가 일치하는 경우
+        if(pw.equals(pwConfirm)) { // 비밀번호가 일치하는 경우
             String sql = "INSERT INTO USER_INFO(USERNAME, PW, PW_CONFIRM, EMAIL, PHONE, NICKNAME, JOIN_DATE) VALUES(?,?,?,?,?,?,SYSDATE)";
 
             try {
@@ -30,7 +30,7 @@ public class User_infoDAO {
                 pStmt = conn.prepareStatement(sql);
                 pStmt.setString(1, userName);
                 pStmt.setString(2, pw);
-                pStmt.setString(3, pw_confirm);
+                pStmt.setString(3, pwConfirm);
                 pStmt.setString(4, email);
                 pStmt.setString(5, phone);
                 pStmt.setString(6, nickname);
@@ -326,12 +326,5 @@ public class User_infoDAO {
 
         return result;
     }
-
-
-
-
-
-
-
 
 }
