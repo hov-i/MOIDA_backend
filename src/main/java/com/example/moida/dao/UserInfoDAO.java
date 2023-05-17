@@ -1,6 +1,8 @@
 package com.example.moida.dao;
 
 import com.example.moida.common.Common;
+import com.example.moida.vo.UserInfoVO;
+import org.springframework.context.annotation.Profile;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -142,37 +144,36 @@ public class UserInfoDAO {
 //
 //
 
-//    //MY Page
-//    // 내 정보 조회
-//    public UserInfoVO getMyInfo(String user_id) {
-//        UserInfoVO userInfo = null;
-//        try {
-//            conn = Common.getConnection();
-//            String sql = "SELECT * FROM USER_INFO WHERE USER_ID = ?";
-//            pStmt = conn.prepareStatement(sql);
-//            pStmt.setString(1, user_id);
-//            rs = pStmt.executeQuery();
-//            if (rs.next()) {
-//                userInfo = new UserInfoVO();
-//                userInfo.setCnt(rs.getInt("CNT"));
-//                userInfo.setUser_id(rs.getString("USER_ID"));
-//                userInfo.setUser_pw(rs.getString("USER_PW"));
-//                userInfo.setEmail(rs.getString("EMAIL"));
-//                userInfo.setPhone(rs.getString("PHONE"));
-//                userInfo.setNickname(rs.getString("NICKNAME"));
-//                userInfo.setJoinDate(rs.getDate("JOIN_DATE"));
-//                userInfo.setWithdrawDate(rs.getDate("WITHDRAW_DATE"));
-//                userInfo.setExpireDate(rs.getDate("EXPIRE_DATE"));
-//            }
-//            Common.close(rs);
-//            Common.close(pStmt);
-//            Common.close(conn);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return userInfo;
-//    }
-//
+    //MY Page
+    // 프로필 확인
+    public UserInfoVO getMyInfo(String userId) {
+        UserInfoVO userInfo = null;
+        try {
+            conn = Common.getConnection();
+            String sql = "SELECT * FROM USER_INFO WHERE USER_ID = ?";
+            pStmt = conn.prepareStatement(sql);
+            pStmt.setString(1, userId);
+            rs = pStmt.executeQuery();
+            if (rs.next()) {
+                userInfo = new UserInfoVO();
+                userInfo.setUserName(rs.getString("USERNAME"));
+                userInfo.setEmail(rs.getString("EMAIL"));
+                userInfo.setPhone(rs.getString("PHONE"));
+                userInfo.setNickname(rs.getString("NICKNAME"));
+                userInfo.setImg(rs.getString("IMG"));
+            }
+            Common.close(rs);
+            Common.close(pStmt);
+            Common.close(conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userInfo;
+    }
+
+
+
+    // 프로필 수정
     // 이메일 변경(OK)
     public boolean updateEmail(String userName, String newEmail) {
         boolean result = false;
@@ -205,13 +206,13 @@ public class UserInfoDAO {
 
 
     // 비밀번호 변경(OK) - 이건 넣고 싶으면 아예 수정 구조를 변형해야 함...
-    public boolean updatePassword(String userName, String pw, String newPw) {
+    public boolean updatePassword(String userId, String pw, String newPw) {
         boolean result = false;
         try {
             conn = Common.getConnection();
-            String sql = "SELECT COUNT(*) FROM USER_INFO WHERE USERNAME = ? AND PW = ?";
+            String sql = "SELECT COUNT(*) FROM USER_INFO WHERE USER_ID = ? AND PW = ?";
             pStmt = conn.prepareStatement(sql);
-            pStmt.setString(1, userName);
+            pStmt.setString(1, userId);
             pStmt.setString(2, pw);
             rs = pStmt.executeQuery();
             if (rs.next() && rs.getInt(1) == 0) {
@@ -222,7 +223,7 @@ public class UserInfoDAO {
             sql = "UPDATE USER_INFO SET PW = ? WHERE USERNAME = ?";
             pStmt = conn.prepareStatement(sql);
             pStmt.setString(1, newPw);
-            pStmt.setString(2, userName);
+            pStmt.setString(2, userId);
             int cnt = pStmt.executeUpdate();
             if (cnt > 0) {
                 result = true;
@@ -236,7 +237,7 @@ public class UserInfoDAO {
     }
 
     // 닉네임 변경(OK)
-    public boolean updateNickname(String userName, String newNickname) {
+    public boolean updateNickname(String userId, String newNickname) {
         boolean result = false;
 
         try {
@@ -247,7 +248,7 @@ public class UserInfoDAO {
             if (rs.next() && rs.getInt("cnt") == 0) { // 중복되는 닉네임이 없으면 변경 가능
                 pStmt = conn.prepareStatement("UPDATE USER_INFO SET NICKNAME = ? WHERE USERNAME = ?");
                 pStmt.setString(1, newNickname);
-                pStmt.setString(2, userName);
+                pStmt.setString(2, userId);
                 pStmt.executeUpdate();
                 result = true;
             }
@@ -265,7 +266,7 @@ public class UserInfoDAO {
 
 
     // 핸드폰 번호 변경(OK)
-    public boolean updatePhone(String userName, String newPhone) {
+    public boolean updatePhone(String userId, String newPhone) {
         boolean result = false;
 
         try {
@@ -276,7 +277,7 @@ public class UserInfoDAO {
             if (rs.next() && rs.getInt("cnt") == 0) { // 중복되는 폰 번호가 없으면 변경 가능
                 pStmt = conn.prepareStatement("UPDATE USER_INFO SET PHONE = ? WHERE USERNAME = ?");
                 pStmt.setString(1, newPhone);
-                pStmt.setString(2, userName);
+                pStmt.setString(2, userId);
                 pStmt.executeUpdate();
                 result = true;
             }
@@ -296,21 +297,20 @@ public class UserInfoDAO {
 
 
 
-
     //회원 탈퇴
-    public boolean memberDelete(String userName, String pw) {
+    public boolean memberDelete(String userId, String pw) {
         boolean result = false;
 
         try {
             conn = Common.getConnection();
             pStmt = conn.prepareStatement("SELECT * FROM USER_INFO WHERE USERNAME = ?");
-            pStmt.setString(1, userName);
+            pStmt.setString(1, userId);
             rs = pStmt.executeQuery();
             if (rs.next()) {
                 String dbPw = rs.getString("PW");
                 if (dbPw.equals(pw)) { // 입력한 비밀번호와 일치하면 탈퇴 진행
                     pStmt = conn.prepareStatement("DELETE FROM USER_INFO WHERE USERNAME = ?");
-                    pStmt.setString(1, userName);
+                    pStmt.setString(1, userId);
                     pStmt.executeUpdate();
                     result = true;
                 }

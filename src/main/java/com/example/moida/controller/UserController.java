@@ -2,6 +2,7 @@ package com.example.moida.controller;
 
 import com.example.moida.dao.MailDAO;
 import com.example.moida.dao.UserInfoDAO;
+import com.example.moida.vo.UserInfoVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,16 +55,6 @@ public class UserController {
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
-    // POST : 폰 번호 변경
-    @PostMapping("/phone")
-    public ResponseEntity<Boolean> updatePhone(@RequestBody Map<String, String> phoneData) {
-        String userName = phoneData.get("userName");
-        String newPhone = phoneData.get("newPhone");
-        UserInfoDAO dao = new UserInfoDAO();
-        boolean isTrue = dao.updatePhone(userName, newPhone);
-        return new ResponseEntity<>(isTrue, HttpStatus.OK);
-    }
-
     // 이메일 보내기
     @Autowired
     private MailDAO mailDAO;
@@ -97,43 +88,79 @@ public class UserController {
 
 
     //MY PAGE
+    // 프로필 확인
+//    @GetMapping("/myInfo")
+//    public ResponseEntity<UserInfoVO> getMyInfo(@RequestParam String userId) {
+//        System.out.println("USER_ID : " + userId);
+//        UserInfoVO dao = new UserInfoVO();
+//        List<UserInfoVO> list = dao.getMyInfo(userId);
+//        return new ResponseEntity<>(list, HttpStatus.OK);
+//    }
+
+
+
+    // 프로필 변경
+    // POST : 폰 번호 변경
+    @PostMapping("/phone")
+    public ResponseEntity<Boolean> updatePhone(@RequestBody Map<String, String> phoneData) {
+        String userName = phoneData.get("userName");
+        String newPhone = phoneData.get("newPhone");
+        UserInfoDAO dao = new UserInfoDAO();
+        boolean isTrue = dao.updatePhone(userName, newPhone);
+        return new ResponseEntity<>(isTrue, HttpStatus.OK);
+    }
+
     // POST : 이메일 변경
     @PostMapping("/email")
     public ResponseEntity<Boolean> updateEmail(@RequestBody Map<String, String> phoneData) {
-        String userName = phoneData.get("userName");
+        String userId = phoneData.get("userId");
         String newEmail = phoneData.get("newEmail");
         UserInfoDAO dao = new UserInfoDAO();
-        boolean isTrue = dao.updatePhone(userName, newEmail);
+        boolean isTrue = dao.updateEmail(userId, newEmail);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
     // POST : 비번 변경
     @PostMapping("/pw")
     public ResponseEntity<Boolean> updatePassword(@RequestBody Map<String, String> phoneData) {
-        String userName = phoneData.get("userName");
+        String userId = phoneData.get("userId");
+        String pw = phoneData.get("pw");
         String newPw = phoneData.get("newPw");
         UserInfoDAO dao = new UserInfoDAO();
-        boolean isTrue = dao.updatePhone(userName, newPw);
+        boolean isTrue = dao.updatePassword(userId, pw, newPw);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
     // POST : 닉네임 변경
     @PostMapping("/nickname")
     public ResponseEntity<Boolean> updateNickname(@RequestBody Map<String, String> phoneData) {
-        String userName = phoneData.get("userName");
+        String userId = phoneData.get("userId");
         String newNickname = phoneData.get("newNickname");
         UserInfoDAO dao = new UserInfoDAO();
-        boolean isTrue = dao.updatePhone(userName, newNickname);
+        boolean isTrue = dao.updateNickname(userId, newNickname);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
+
 
     // POST : 회원 탈퇴(the last)
     @PostMapping("/del")
     public ResponseEntity<Boolean> memberDelete(@RequestBody Map<String, String> delData) {
-        String userName = delData.get("userName");
+        String userId = delData.get("userId");
         String pw = delData.get("pw");
         UserInfoDAO dao = new UserInfoDAO();
-        boolean isTrue = dao.memberDelete(userName, pw);
+        boolean isTrue = dao.memberDelete(userId, pw);
+        return new ResponseEntity<>(isTrue, HttpStatus.OK);
+    }
+
+    // POST : test
+    @PostMapping("/myPage")
+    public ResponseEntity<Boolean> myPage(@RequestBody Map<String, String> userName) {
+        System.out.println(userName);
+//        String userName = delData.get("userName");
+//        String pw = delData.get("pw");
+        UserInfoDAO dao = new UserInfoDAO();
+        boolean isTrue = true;
+        //dao.memberDelete(userName, pw);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 }
