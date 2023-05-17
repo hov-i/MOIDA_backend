@@ -10,17 +10,18 @@ import java.sql.Date;
 @Getter
 @Setter
 public class StudyVO {
-    private int study_id;
-    private String study_mgr_id;
-    private String study_name;
-    private String study_category;
-    private int study_user_limit;
-    private int study_user_count;
-    private Date study_deadline;
-    private String study_chat_url;
-    private String study_intro;
-    private Clob study_content;
-    private String study_profile;
-    private String tag_name;
-    private String user_name;
+    private int studyId;
+    private String studyMgrId;
+    private String studyName;
+    private String studyCategory;
+    private int studyUserLimit;
+    private int studyUserCount;
+    private Date studyDeadline;
+    private String studyChatUrl;
+    private String studyIntro;
+    private String studyContent;
+    private String studyProfile;
+    private String tagName;
+    private String userName;
+    private String userIntro;
 }

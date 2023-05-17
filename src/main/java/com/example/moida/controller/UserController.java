@@ -35,7 +35,7 @@ public class UserController {
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
-//로그인
+    //로그인
     @PostMapping("/login")
     public ResponseEntity<Boolean> memberLogin(@RequestBody Map<String, String> loginData) {
         String userName = loginData.get("userName");

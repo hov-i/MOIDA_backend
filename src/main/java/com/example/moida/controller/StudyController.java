@@ -6,7 +6,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.sql.rowset.serial.SerialClob;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.sql.Clob;
+
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -19,29 +27,23 @@ public class StudyController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-//    @PostMapping("/new")
-//    public ResponseEntity<Boolean> studyRegister( Map<String, String> regData) throws ParseException, SQLException {
-//        String getStudyMgrId = regData.get("study_mgr_id");
-//        String getStudyName = regData.get("study_name");
-//        String getStudyCategory = regData.get("study_category");
-//        String getTagList = regData.get("tag_list");
-//
-//        String getStudyUserLimit = regData.get("study_user_limit");
-//        int studyUserLimit = Integer.parseInt(getStudyUserLimit);
-//
-//        String getStudyDeadline = regData.get("study_deadline");
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//        Date studyDeadline = dateFormat.parse(getStudyDeadline);
-//        java.sql.Date sqlDate = new java.sql.Date(studyDeadline.getTime());
-//
-//        String getStudyChatUrl = regData.get("study_chat_url");
-//        String getStudyInfo = regData.get("study_info");
-//
-//        String getStudyContent = regData.get("study_content");
-//        Clob studyContent = new SerialClob(getStudyContent.toCharArray());
-//        StudyDAO dao = new StudyDAO();
-//        boolean isTrue = dao.studyRegister(getStudyMgrId, getStudyName, getStudyCategory, getTagList, studyUserLimit, sqlDate,getStudyChatUrl, getStudyInfo, studyContent);
-//        return new ResponseEntity<>(isTrue, HttpStatus.OK);
-//    }
+
+    @GetMapping("/study/studyRoom/Main/{studyId}")
+    public ResponseEntity<StudyVO> viewStudy(@PathVariable int studyId) {
+        System.out.println("Study Id : " + studyId);
+        StudyDAO dao = new StudyDAO();
+        StudyVO studyInfo = dao.getStudyById(studyId);
+        return new ResponseEntity<>(studyInfo, HttpStatus.OK);
+    }
+
+    @GetMapping("/study/studyRoom/Member/{studyId}")
+    public ResponseEntity<StudyVO> viewStudyMem(@PathVariable int studyId) {
+        System.out.println("Study Id : " + studyId);
+        StudyDAO dao = new StudyDAO();
+        StudyVO studyInfo = dao.getStudyById(studyId);
+        return new ResponseEntity<>(studyInfo, HttpStatus.OK);
+    }
+
+
 
 }
