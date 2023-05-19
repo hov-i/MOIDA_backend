@@ -24,4 +24,5 @@ public class StudyVO {
     private String tagName;
     private String userName;
     private String userIntro;
+    private int userId;
 }

@@ -13,11 +13,12 @@ public class StudyDAO {
     private ResultSet rs = null;
     private PreparedStatement pstmt = null;
 
+
     public List<StudyVO> studySelect() {
         List<StudyVO> studyList = new ArrayList<>();
         try (Connection conn = Common.getConnection();
              Statement stmt = conn.createStatement()) {
-            String sql = "SELECT S.STUDY_ID, S.STUDY_CATEGORY, UI.USERNAME, S.STUDY_USER_LIMIT, S.STUDY_DEADLINE, S.STUDY_USER_COUNT, S.STUDY_NAME, S.STUDY_INTRO, T.TAG_NAME " +
+            String sql = "SELECT S.STUDY_ID, S.STUDY_CATEGORY, UI.USERNAME, S.STUDY_USER_LIMIT, S.STUDY_DEADLINE, S.STUDY_USER_COUNT, S.STUDY_NAME, S.STUDY_INTRO, S.STUDY_PROFILE, T.TAG_NAME " +
                     "FROM STUDY_INFO S " +
                     "JOIN STUDY_TAG_REL STR ON S.STUDY_ID = STR.STUDY_ID " +
                     "JOIN TAGS T ON STR.TAG_ID = T.TAG_ID " +
@@ -41,6 +42,7 @@ public class StudyDAO {
                         study.setStudyUserCount(rs.getInt("STUDY_USER_COUNT"));
                         study.setStudyName(rs.getString("STUDY_NAME"));
                         study.setStudyIntro(rs.getString("STUDY_INTRO"));
+                        study.setStudyProfile(rs.getString("STUDY_PROFILE"));
                         study.setTagName("#" + rs.getString("TAG_NAME"));
 
                         prevStudyId = nowStudyId;
@@ -56,15 +58,18 @@ public class StudyDAO {
         return studyList;
     }
 
+
     public StudyVO getStudyById(int studyId) {
+
         StudyVO vo = new StudyVO();
 
         try {
             conn = Common.getConnection();
             StringBuilder sql = new StringBuilder();
-            sql.append("SELECT S.*, T.TAG_NAME  FROM STUDY_INFO S ");
+            sql.append("SELECT S.*, T.TAG_NAME, UI.NICKNAME FROM STUDY_INFO S ");
             sql.append("JOIN STUDY_TAG_REL STR ON S.STUDY_ID = STR.STUDY_ID ");
             sql.append("JOIN TAGS T ON STR.TAG_ID = T.TAG_ID ");
+            sql.append("JOIN USER_INFO UI ON S.STUDY_MGR_ID = UI.USER_ID ");
             sql.append("WHERE S.STUDY_ID = ? ");
 
             pstmt = conn.prepareStatement(sql.toString());
@@ -72,19 +77,23 @@ public class StudyDAO {
             rs = pstmt.executeQuery();
             int num = 0;
             while (rs.next()) {
-                vo.setStudyId(studyId);
-                vo.setStudyMgrId(rs.getString("STUDY_MGR_ID"));
-                vo.setStudyName(rs.getString("STUDY_NAME"));
-                vo.setStudyCategory(rs.getString("STUDY_CATEGORY"));
-                vo.setStudyUserLimit(rs.getInt("STUDY_USER_LIMIT"));
-                vo.setStudyUserCount(rs.getInt("STUDY_USER_COUNT"));
-                vo.setStudyDeadline(rs.getDate("STUDY_DEADLINE"));
-                vo.setStudyChatUrl(rs.getString("STUDY_CHAT_URL"));
-                vo.setStudyIntro(rs.getString("STUDY_INTRO"));
-                vo.setStudyContent(rs.getString("STUDY_CONTENT"));
-                vo.setTagName("#" + rs.getString("TAG_NAME"));
-                num = 1;
                 if (num == 1) vo.setTagName(vo.getTagName() + " #" + rs.getString("TAG_NAME"));
+                else {
+                    vo.setStudyId(studyId);
+                    vo.setStudyMgrId(rs.getString("STUDY_MGR_ID"));
+                    vo.setStudyName(rs.getString("STUDY_NAME"));
+                    vo.setStudyCategory(rs.getString("STUDY_CATEGORY"));
+                    vo.setStudyUserLimit(rs.getInt("STUDY_USER_LIMIT"));
+                    vo.setStudyUserCount(rs.getInt("STUDY_USER_COUNT"));
+                    vo.setStudyDeadline(rs.getDate("STUDY_DEADLINE"));
+                    vo.setStudyChatUrl(rs.getString("STUDY_CHAT_URL"));
+                    vo.setStudyIntro(rs.getString("STUDY_INTRO"));
+                    vo.setStudyContent(rs.getString("STUDY_CONTENT"));
+                    vo.setUserName(rs.getString("NICKNAME"));
+                    vo.setTagName("#" + rs.getString("TAG_NAME"));
+                }
+                num = 1;
+
             }
 
         } catch (SQLException e) {
@@ -93,12 +102,13 @@ public class StudyDAO {
         return vo;
     }
 
-    public StudyVO getStudyMem(int studyid) {
+    public List<StudyVO> getStudyMem(int studyid) {
+        List<StudyVO> memList = new ArrayList<>();
         StudyVO vo = new StudyVO();
         try {
             conn = Common.getConnection();
             StringBuilder sql = new StringBuilder();
-            sql.append("SELECT UI.NICKNAME, UI.INTRO ");
+            sql.append("SELECT UI.USER_ID, UI.NICKNAME, UI.INTRO ");
             sql.append("FROM USER_INFO UI ");
             sql.append("JOIN STUDY_USER SU ON UI.USER_ID = SU.USER_ID ");
             sql.append("WHERE SU.STUDY_ID = ? ");
@@ -109,17 +119,19 @@ public class StudyDAO {
             int num = 0;
             while (rs.next()) {
                 vo.setStudyId(studyid);
+                vo.setUserId(rs.getInt("USER_ID"));
                 vo.setUserName(rs.getString("NICKNAME"));
-                vo.setStudyName(rs.getString("STUDY_NAME"));
-                num = 1;
-                if (num == 1) vo.setTagName(vo.getTagName() + " #" + rs.getString("TAG_NAME"));
+                vo.setUserIntro(rs.getString("INTRO"));
+                memList.add(vo);
             }
+
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return vo;
+        return memList;
     }
+
 
 
 

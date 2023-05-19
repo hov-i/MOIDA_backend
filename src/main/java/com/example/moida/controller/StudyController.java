@@ -1,6 +1,8 @@
 package com.example.moida.controller;
 
+import com.example.moida.dao.ScheduleDAO;
 import com.example.moida.dao.StudyDAO;
+import com.example.moida.vo.ScheduleVO;
 import com.example.moida.vo.StudyVO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,11 +39,19 @@ public class StudyController {
     }
 
     @GetMapping("/study/studyRoom/Member/{studyId}")
-    public ResponseEntity<StudyVO> viewStudyMem(@PathVariable int studyId) {
+    public ResponseEntity<List<StudyVO>> viewStudyMem(@PathVariable int studyId) {
         System.out.println("Study Id : " + studyId);
         StudyDAO dao = new StudyDAO();
-        StudyVO studyInfo = dao.getStudyById(studyId);
-        return new ResponseEntity<>(studyInfo, HttpStatus.OK);
+        List<StudyVO> list = dao.getStudyMem(studyId);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/study/studyRoom/Schedule/{studyId}")
+    public ResponseEntity<List<ScheduleVO>> viewStudySc(@PathVariable int studyId) {
+        System.out.println("Study Id : " + studyId);
+        ScheduleDAO dao = new ScheduleDAO();
+        List<ScheduleVO> list = dao.getStudySc(studyId);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
 
