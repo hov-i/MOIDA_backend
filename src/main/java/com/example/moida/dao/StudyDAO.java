@@ -90,6 +90,7 @@ public class StudyDAO {
                     vo.setStudyIntro(rs.getString("STUDY_INTRO"));
                     vo.setStudyContent(rs.getString("STUDY_CONTENT"));
                     vo.setUserName(rs.getString("NICKNAME"));
+                    vo.setStudyProfile(rs.getString("STUDY_PROFILE"));
                     vo.setTagName("#" + rs.getString("TAG_NAME"));
                 }
                 num = 1;
@@ -133,6 +134,77 @@ public class StudyDAO {
     }
 
 
+    public boolean studyInsert(int userId, String studyName, String studyCategory, int studyUserLimit, String studyChatUrl, String studyIntro, String studyContent, Date sqlDate, String studyProfile, List<String> getTagList) {
+        int result = 0;
+        try {
+            conn = Common.getConnection();
+            StringBuilder sql = new StringBuilder();
+            sql.append("INSERT INTO STUDY_INFO (STUDY_ID, STUDY_MGR_ID, STUDY_NAME, STUDY_CATEGORY, STUDY_USER_LIMIT, STUDY_USER_COUNT, STUDY_CHAT_URL, STUDY_INTRO, STUDY_CONTENT, STUDY_DEADLINE, STUDY_PROFILE) ");
+            sql.append("VALUES (SEQ_STUDY_ID.NEXTVAL, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?)");
 
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setInt(1, userId);
+            pstmt.setString(2, studyName);
+            pstmt.setString(3, studyCategory);
+            pstmt.setInt(4, studyUserLimit);
+            pstmt.setString(5, studyChatUrl);
+            pstmt.setString(6, studyIntro);
+            pstmt.setString(7, studyContent);
+            pstmt.setDate(8, sqlDate);
+            pstmt.setString(9, studyProfile);
 
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY_INFO DB 결과 확인: " + result);
+
+            if (result != 1) {
+                return false;
+            }
+
+            sql = new StringBuilder();
+            sql.append("INSERT INTO STUDY_USER (STUDY_USER_ID, STUDY_ID, USER_ID, REG_DATE) ");
+            sql.append("VALUES (SEQ_STUDY_USER_ID.NEXTVAL, SEQ_STUDY_ID.CURRVAL, ?, SYSDATE)");
+
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setInt(1, userId);
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY_USER DB 결과 확인: " + result);
+            if (result != 1) {
+                return false;
+            }
+            System.out.println(getTagList);
+            for (String tagName : getTagList) {
+                sql = new StringBuilder();
+                sql.append("INSERT INTO TAGS (TAG_ID, TAG_NAME) ");
+                sql.append("SELECT SEQ_TAG_ID.NEXTVAL, ? ");
+                sql.append("FROM DUAL ");
+                sql.append("WHERE NOT EXISTS (SELECT 1 FROM TAGS WHERE TAG_NAME = ?)");
+
+                pstmt = conn.prepareStatement(sql.toString());
+                pstmt.setString(1, tagName);
+                pstmt.setString(2, tagName);
+
+                result = pstmt.executeUpdate();
+                System.out.println("TAGS DB 결과 확인: " + result);
+
+                sql = new StringBuilder();
+                sql.append("INSERT INTO STUDY_TAG_REL (STUDY_ID, TAG_ID) ");
+                sql.append("VALUES (SEQ_STUDY_ID.CURRVAL, (SELECT TAG_ID FROM TAGS WHERE TAG_NAME = ?))");
+
+                pstmt = conn.prepareStatement(sql.toString());
+                pstmt.setString(1, tagName);
+
+                result = pstmt.executeUpdate();
+                System.out.println("STUDY_TAG_REL DB 결과 확인: " + result);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            Common.close(pstmt);
+            Common.close(conn);
+        }
+
+        return result == 1;
+    }
 }
