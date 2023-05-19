@@ -9,14 +9,14 @@ import java.sql.Date;
 @Setter
 public class UserInfoVO {
     private int cnt;
-    private String userId;
+    private int userId;
     private String pw;
     private String email;
     private String phone;
     private String userName;
     private String nickname;
-    private String pwConfirm;
     private String img;
+    private String intro;
     private Date joinDate;
     private Date withdrawDate;
     private Date expireDate;

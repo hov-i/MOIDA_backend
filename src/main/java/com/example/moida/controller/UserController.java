@@ -38,14 +38,19 @@ public class UserController {
 
     //로그인
     @PostMapping("/login")
-    public ResponseEntity<Boolean> memberLogin(@RequestBody Map<String, String> loginData) {
+    public ResponseEntity<UserInfoVO> memberLogin(@RequestBody Map<String, String> loginData) {
         String userName = loginData.get("userName");
         String pw = loginData.get("pw");
         UserInfoDAO dao = new UserInfoDAO();
-        boolean result = dao.loginCheck(userName, pw);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-
+        boolean loginSuccess = dao.loginCheck(userName, pw);
+        if (loginSuccess) {
+            UserInfoVO userInfo = dao.getUserInfo(userName);
+            return new ResponseEntity<>(userInfo, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
+
 
     // GET : 가입 여부 확인
     @GetMapping("/check")
@@ -55,7 +60,7 @@ public class UserController {
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
-    // 이메일 보내기
+    // 이메일 보내기 -- 오류 재확인 필요
     @Autowired
     private MailDAO mailDAO;
 
@@ -89,12 +94,16 @@ public class UserController {
 
     //MY PAGE
     // 프로필 확인
-//    @GetMapping("/myInfo")
-//    public ResponseEntity<UserInfoVO> getMyInfo(@RequestParam String userId) {
-//        System.out.println("USER_ID : " + userId);
-//        UserInfoVO dao = new UserInfoVO();
-//        List<UserInfoVO> list = dao.getMyInfo(userId);
-//        return new ResponseEntity<>(list, HttpStatus.OK);
+//    @GetMapping("/myInfo/{userId}")
+//    public ResponseEntity<UserInfoVO> getProfile(@PathVariable int userId) {
+//        UserInfoDAO dao = new UserInfoDAO();
+//        UserInfoVO userInfo = dao.getMyInfo(userId);
+//
+//        if (userInfo != null) {
+//            return new ResponseEntity<>(userInfo, HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
 //    }
 
 
@@ -103,20 +112,24 @@ public class UserController {
     // POST : 폰 번호 변경
     @PostMapping("/phone")
     public ResponseEntity<Boolean> updatePhone(@RequestBody Map<String, String> phoneData) {
-        String userName = phoneData.get("userName");
-        String newPhone = phoneData.get("newPhone");
+        System.out.println(phoneData.get("userId"));
+        System.out.println(phoneData.get("phone"));
+        String userId = phoneData.get("userId");
+        String phone = phoneData.get("phone");
         UserInfoDAO dao = new UserInfoDAO();
-        boolean isTrue = dao.updatePhone(userName, newPhone);
+        boolean isTrue = dao.updatePhone(userId, phone);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
     // POST : 이메일 변경
     @PostMapping("/email")
     public ResponseEntity<Boolean> updateEmail(@RequestBody Map<String, String> phoneData) {
+        System.out.println(phoneData.get("userId"));
+        System.out.println(phoneData.get("email"));
         String userId = phoneData.get("userId");
-        String newEmail = phoneData.get("newEmail");
+        String email = phoneData.get("email");
         UserInfoDAO dao = new UserInfoDAO();
-        boolean isTrue = dao.updateEmail(userId, newEmail);
+        boolean isTrue = dao.updateEmail(userId, email);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
@@ -133,12 +146,28 @@ public class UserController {
 
     // POST : 닉네임 변경
     @PostMapping("/nickname")
-    public ResponseEntity<Boolean> updateNickname(@RequestBody Map<String, String> phoneData) {
-        String userId = phoneData.get("userId");
-        String newNickname = phoneData.get("newNickname");
+    public ResponseEntity<Boolean> updateNickname(@RequestBody Map<String, Object> nicknameData) {
+        System.out.println(nicknameData.get("userId"));
+        System.out.println(nicknameData.get("nickname"));
+        int userId = (int) nicknameData.get("userId");
+        String nickname = (String) nicknameData.get("nickname");
+
         UserInfoDAO dao = new UserInfoDAO();
-        boolean isTrue = dao.updateNickname(userId, newNickname);
-        return new ResponseEntity<>(isTrue, HttpStatus.OK);
+        boolean isUpdated = dao.updateNickname(userId, nickname);
+        return ResponseEntity.ok(isUpdated);
+    }
+
+    // 이미지 url 변경
+    @PostMapping("/img")
+    public ResponseEntity<Boolean> uploadImageURL(@RequestBody Map<String, Object> imageURLData) {
+        System.out.println(imageURLData.get("userId"));
+        System.out.println(imageURLData.get("img"));
+        int userId = (int) imageURLData.get("userId");
+        String img = (String) imageURLData.get("img");
+
+        UserInfoDAO dao = new UserInfoDAO();
+        boolean isUpdated = dao.uploadImageURL(userId, img);
+        return ResponseEntity.ok(isUpdated);
     }
 
 
