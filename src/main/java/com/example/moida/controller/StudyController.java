@@ -29,6 +29,7 @@ public class StudyController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
+
     // 스터디룸 메인
     @GetMapping("/study/studyRoom/Main/{studyId}")
     public ResponseEntity<StudyVO> viewStudy(@PathVariable int studyId) {

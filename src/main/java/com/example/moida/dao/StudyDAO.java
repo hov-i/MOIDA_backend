@@ -18,7 +18,7 @@ public class StudyDAO {
         List<StudyVO> studyList = new ArrayList<>();
         try (Connection conn = Common.getConnection();
              Statement stmt = conn.createStatement()) {
-            String sql = "SELECT S.STUDY_ID, S.STUDY_CATEGORY, UI.USERNAME, S.STUDY_USER_LIMIT, S.STUDY_DEADLINE, S.STUDY_USER_COUNT, S.STUDY_NAME, S.STUDY_INTRO, S.STUDY_PROFILE, T.TAG_NAME " +
+            String sql = "SELECT S.STUDY_ID, S.STUDY_CATEGORY, UI.USERNAME, UI.USER_ID, S.STUDY_USER_LIMIT, S.STUDY_DEADLINE, S.STUDY_USER_COUNT, S.STUDY_NAME, S.STUDY_INTRO, S.STUDY_PROFILE, T.TAG_NAME " +
                     "FROM STUDY_INFO S " +
                     "JOIN STUDY_TAG_REL STR ON S.STUDY_ID = STR.STUDY_ID " +
                     "JOIN TAGS T ON STR.TAG_ID = T.TAG_ID " +
@@ -37,6 +37,7 @@ public class StudyDAO {
                         study.setStudyId(nowStudyId);
                         study.setStudyCategory(rs.getString("STUDY_CATEGORY"));
                         study.setUserName(rs.getString("USERNAME"));
+                        study.setUserId(rs.getInt("USER_ID"));
                         study.setStudyUserLimit(rs.getInt("STUDY_USER_LIMIT"));
                         study.setStudyDeadline(rs.getDate("STUDY_DEADLINE"));
                         study.setStudyUserCount(rs.getInt("STUDY_USER_COUNT"));
@@ -57,6 +58,49 @@ public class StudyDAO {
         }
         return studyList;
     }
+
+//    public List<StudyVO> myStudySelect(int userId) {
+//        List<StudyVO> myStudyList = new ArrayList<>();
+//        try (Connection conn = Common.getConnection();
+//             PreparedStatement pstmt = conn.prepareStatement("SELECT S.STUDY_ID, S.STUDY_USER_LIMIT, S.STUDY_USER_COUNT, S.STUDY_NAME, S.STUDY_INTRO, S.STUDY_PROFILE, T.TAG_NAME " +
+//                     "FROM STUDY_INFO S " +
+//                     "JOIN STUDY_TAG_REL STR ON S.STUDY_ID = STR.STUDY_ID " +
+//                     "JOIN TAGS T ON STR.TAG_ID = T.TAG_ID " +
+//                     "JOIN USER_INFO UI ON S.STUDY_MGR_ID = UI.USER_ID " +
+//                     "WHERE UI.USER_ID = ? " +
+//                     "ORDER BY STUDY_ID DESC")) {
+//
+//            pstmt.setInt(1, userId);
+//            try (ResultSet rs = pstmt.executeQuery()) {
+//
+//                int prevStudyId = -1;
+//                StudyVO study = null;
+//
+//                while (rs.next()) {
+//                    int nowStudyId = rs.getInt("STUDY_ID");
+//                    if (prevStudyId != nowStudyId) {
+//                        if (study != null) myStudyList.add(study);
+//                        study = new StudyVO();
+//                        study.setStudyId(nowStudyId);
+//                        study.setStudyUserLimit(rs.getInt("STUDY_USER_LIMIT"));
+//                        study.setStudyUserCount(rs.getInt("STUDY_USER_COUNT"));
+//                        study.setStudyName(rs.getString("STUDY_NAME"));
+//                        study.setStudyIntro(rs.getString("STUDY_INTRO"));
+//                        study.setStudyProfile(rs.getString("STUDY_PROFILE"));
+//                        study.setTagName("#" + rs.getString("TAG_NAME"));
+//
+//                        prevStudyId = nowStudyId;
+//                    } else {
+//                        study.setTagName(study.getTagName() + " #" + rs.getString("TAG_NAME"));
+//                    }
+//                }
+//                myStudyList.add(study);
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return myStudyList;
+//    }
 
 
     public StudyVO getStudyById(int studyId) {
