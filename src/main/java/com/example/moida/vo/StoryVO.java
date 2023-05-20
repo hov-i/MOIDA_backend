@@ -1,34 +1,53 @@
 package com.example.moida.vo;
 
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Clob;
-import java.sql.Date;
+
+import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 
 public class StoryVO {
+    private int storyId;
+    private int userId;
+    private String category;
+    private String imgUrl;
+    private String studyName; // join 으로 사용할 예정
+    private String title;
 
-    private String story_img;
+    private String userImgUrl; // join 으로 사용할 예정
+    private String nickname; // join 으로 사용할 예정
+    private int storyLike;
+    private String regTime;
+    private int studyId;
+    private String studyColor; // join 으로 사용할 예정
+    private String studyDesc; // join 으로 사용할 예정
+    private String studyTag; // join 으로 사용할 예정
+    private String contents;
+    private List<CommentVO> comments; // join 으로 사용할 예정
 
-    private String study_name;
 
-    private int story_id;
+    // Story 작성 insert VO
+    public StoryVO(int studyId, int userId, String title, String contents, String imgUrl) {
 
-    private int user_id;
+        this.studyId = studyId;
+        this.userId = userId;
+        this.title = title;
+        this.contents = contents;
+        this.imgUrl = imgUrl;
+    }
 
-    private String story_name;
-
-    private String story_content;
-
-    private String study_id;
-
-    private Date story_date;
-
-    private int story_like;
 }
+
+
+
+
+
+
+
