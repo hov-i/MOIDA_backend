@@ -67,12 +67,14 @@ public class UserController {
     @ApiOperation(value = "임시 비밀번호 전송", notes = "전송한 임시 비밀번호를 반환한다.", response = Map.class)
     @PostMapping("/sendmail")
     public ResponseEntity<Map<String, Object>> sendMail(@RequestBody Map<String, String> map) {
+        System.out.println(map.get("type"));
+        System.out.println(map.get("email"));
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
 
         String temporaryPassword = mailDAO.makeCode(10); // 임시 비밀번호 생성
 
-        boolean isEmailSent = Boolean.parseBoolean(mailDAO.sendMail(map.get("type"), map.get("email")));
+        boolean isEmailSent = mailDAO.sendMail(map.get("type"), map.get("email"));
         if (isEmailSent) {
             resultMap.put("message", "SUCCESS");
             resultMap.put("temporaryPassword", temporaryPassword);
@@ -136,6 +138,8 @@ public class UserController {
     // POST : 비번 변경
     @PostMapping("/pw")
     public ResponseEntity<Boolean> updatePassword(@RequestBody Map<String, String> phoneData) {
+        System.out.println(phoneData.get("userId"));
+        System.out.println(phoneData.get("newPw"));
         String userId = phoneData.get("userId");
         String pw = phoneData.get("pw");
         String newPw = phoneData.get("newPw");
@@ -157,7 +161,7 @@ public class UserController {
         return ResponseEntity.ok(isUpdated);
     }
 
-    // 이미지 url 변경
+    // 이미지 url 업로드
     @PostMapping("/img")
     public ResponseEntity<Boolean> uploadImageURL(@RequestBody Map<String, Object> imageURLData) {
         System.out.println(imageURLData.get("userId"));
@@ -167,6 +171,19 @@ public class UserController {
 
         UserInfoDAO dao = new UserInfoDAO();
         boolean isUpdated = dao.uploadImageURL(userId, img);
+        return ResponseEntity.ok(isUpdated);
+    }
+
+    // 자기소개 업로드
+    @PostMapping("/intro")
+    public ResponseEntity<Boolean> uploadIntro(@RequestBody Map<String, Object> imageURLData) {
+        System.out.println(imageURLData.get("userId"));
+        System.out.println(imageURLData.get("intro"));
+        int userId = (int) imageURLData.get("userId");
+        String intro = (String) imageURLData.get("intro");
+
+        UserInfoDAO dao = new UserInfoDAO();
+        boolean isUpdated = dao.uploadIntro(userId, intro);
         return ResponseEntity.ok(isUpdated);
     }
 

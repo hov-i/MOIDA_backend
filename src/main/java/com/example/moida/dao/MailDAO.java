@@ -43,10 +43,11 @@ public class MailDAO {
         return html;
     }
 
-    public String sendMail(String type, String email) {
+    public boolean sendMail(String type, String email) {
         String code = null;
         String html = null;
         String subject = null;
+        boolean result = false;
 
         switch(type) {
             case "findPw":
@@ -62,12 +63,13 @@ public class MailDAO {
             mail.setText(html, "utf-8", "html");
             mail.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
             mailSender.send(mail);
+            result = true;
         } catch (MessagingException e) {
             e.printStackTrace();
-            return "error";
+//            return result;
         }
 
-        return code;
+        return result;
     }
 }
 

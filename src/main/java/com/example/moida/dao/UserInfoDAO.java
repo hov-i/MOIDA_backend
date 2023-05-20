@@ -24,21 +24,24 @@ public class UserInfoDAO {
     public boolean memberRegister(String userName, String pw, String pwConfirm, String email, String phone, String nickname) {
         int result = 0;
         boolean success = false;
-        if(pw.equals(pwConfirm)) { // 비밀번호가 일치하는 경우
-            String sql = "INSERT INTO USER_INFO(USERNAME, PW, PW_CONFIRM, EMAIL, PHONE, NICKNAME, JOIN_DATE) VALUES(?,?,?,?,?,?,SYSDATE)";
+
+        if (pw.equals(pwConfirm)) { // 비밀번호가 일치하는 경우
+            String sql = "INSERT INTO USER_INFO(USERNAME, PW, EMAIL, PHONE, NICKNAME, JOIN_DATE) VALUES(?,?,?,?,?,SYSDATE)";
 
             try {
                 conn = Common.getConnection();
                 pStmt = conn.prepareStatement(sql);
                 pStmt.setString(1, userName);
                 pStmt.setString(2, pw);
-                pStmt.setString(3, pwConfirm);
-                pStmt.setString(4, email);
-                pStmt.setString(5, phone);
-                pStmt.setString(6, nickname);
+                pStmt.setString(3, email);
+                pStmt.setString(4, phone);
+                pStmt.setString(5, nickname);
                 result = pStmt.executeUpdate();
-                System.out.println("회원가입이 완료되었습니다. " + result);
-                success = true;
+
+                if (result > 0) {
+                    System.out.println("회원가입이 완료되었습니다. " + result);
+                    success = true;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -51,6 +54,7 @@ public class UserInfoDAO {
 
         return success;
     }
+
 
     // 회원 가입 여부 확인(OK)
     public boolean regMemberCheck(String userName) {
@@ -324,7 +328,7 @@ public class UserInfoDAO {
         return result;
     }
 
-    // 이미지 url 수정
+    // 이미지 url 업로드
     public boolean uploadImageURL(int userId, String img) {
         boolean result = false;
 
@@ -346,7 +350,27 @@ public class UserInfoDAO {
         return result;
     }
 
+    // 자기소개 업로드
+    public boolean uploadIntro(int userId, String intro) {
+        boolean result = false;
 
+        try {
+            conn = Common.getConnection();
+            pStmt = conn.prepareStatement("UPDATE USER_INFO SET Intro = ? WHERE USER_ID = ?");
+            pStmt.setString(1, intro);
+            pStmt.setInt(2, userId);
+            pStmt.executeUpdate();
+            result = true;
+
+            Common.close(pStmt);
+            Common.close(conn);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
 
 
 
