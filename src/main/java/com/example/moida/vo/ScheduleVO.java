@@ -15,5 +15,5 @@ public class ScheduleVO {
     private String studyScContent;
     private int studyScUserLimit;
     private int studyScUserCount;
-
+    private int userId;
 }

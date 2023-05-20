@@ -20,12 +20,11 @@ public class ScheduleDAO {
         try {
             conn = Common.getConnection();
             StringBuilder sql = new StringBuilder();
-            sql.append("SELECT SS.STUDY_SC_ID, SS.STUDY_SC_DATE, SS.STUDY_ID, SS.STUDY_SC_CONTENT, SS.STUDY_SC_USER_LIMIT, COUNT(UI.USER_ID) ");
+            sql.append("SELECT SS.STUDY_SC_ID, SS.USER_ID, SS.STUDY_ID, SS.STUDY_SC_DATE, SS.STUDY_SC_CONTENT, SS.STUDY_SC_USER_LIMIT, COUNT(SM.USER_ID) AS STUDY_SC_USER_COUNT ");
             sql.append("FROM STUDY_SCHEDULE SS ");
-            sql.append("JOIN STUDY_SC_MEMBER SM ON SS.STUDY_SC_ID = SM.STUDY_SC_ID ");
-            sql.append("JOIN USER_INFO UI ON SM.USER_ID = UI.USER_ID ");
+            sql.append("LEFT JOIN STUDY_SC_MEMBER SM ON SS.STUDY_SC_ID = SM.STUDY_SC_ID ");
             sql.append("WHERE SS.STUDY_ID = ? ");
-            sql.append("GROUP BY SS.STUDY_SC_ID, SS.STUDY_SC_DATE, SS.STUDY_ID, SS.STUDY_SC_CONTENT, SS.STUDY_SC_USER_LIMIT");
+            sql.append("GROUP BY SS.STUDY_SC_ID, SS.USER_ID, SS.STUDY_ID, SS.STUDY_SC_DATE, SS.STUDY_SC_CONTENT, SS.STUDY_SC_USER_LIMIT");
 
             pstmt = conn.prepareStatement(sql.toString());
             pstmt.setInt(1, studyid);
@@ -34,10 +33,11 @@ public class ScheduleDAO {
             while (rs.next()) {
                 vo.setStudyId(studyid);
                 vo.setStudyScId(rs.getInt("STUDY_SC_ID"));
+                vo.setUserId(rs.getInt("USER_ID"));
                 vo.setStudyScDate(rs.getDate("STUDY_SC_DATE"));
                 vo.setStudyScContent(rs.getString("STUDY_SC_CONTENT"));
                 vo.setStudyScUserLimit(rs.getInt("STUDY_SC_USER_LIMIT"));
-                vo.setStudyScUserCount(rs.getInt("COUNT(UI.USER_ID)"));
+                vo.setStudyScUserCount(rs.getInt("STUDY_SC_USER_COUNT"));
                 scList.add(vo);
             }
 
@@ -47,6 +47,34 @@ public class ScheduleDAO {
         }
         return scList;
     }
+
+    public boolean scheduleInsert (int userId, int studyId, Date studyScDate, String studyScContent, int studyScUSerLimit) {
+        int result = 0;
+        String sql = "INSERT INTO STUDY_SCHEDULE(STUDY_SC_ID, USER_ID, STUDY_ID, STUDY_SC_DATE, STUDY_SC_CONTENT, STUDY_SC_USER_LIMIT) VALUES (SEQ_STUDY_SC_ID.NEXTVAL, ?, ?, ?, ?, ?) ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, studyId);
+            pstmt.setDate(3, studyScDate);
+            pstmt.setString(4, studyScContent);
+            pstmt.setInt(5, studyScUSerLimit);
+
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY_SCHEDULE DB 결과 확인 : " + result);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+
+        if(result == 1) return true;
+        else return false;
+    }
+
 
 
 

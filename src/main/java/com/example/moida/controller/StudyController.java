@@ -48,7 +48,7 @@ public class StudyController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    // 스터디룸 일정
+    // 스터디룸 일정 리스트
     @GetMapping("/study/studyRoom/Schedule/{studyId}")
     public ResponseEntity<List<ScheduleVO>> viewStudySc(@PathVariable int studyId) {
         System.out.println("Study Id : " + studyId);
@@ -81,6 +81,31 @@ public class StudyController {
         List<String> getTagList = Arrays.asList(regData.get("tagName").split(","));
         StudyDAO dao = new StudyDAO();
         boolean isTrue = dao.studyInsert(UserId, getStudyName, getstudyCategory, studyUserLimit, getstudyChatUrl, getstudyIntro, getstudyContent, sqlDate, getstudyProfile, getTagList);
+        if (isTrue) System.out.println(HttpStatus.OK);
+        return new ResponseEntity<>(isTrue, HttpStatus.OK);
+    }
+
+    //스터디 일정 작성
+    @PostMapping("/study/studyRoom/Schedule/{studyId}")
+    public ResponseEntity<Boolean> scheduleRegister(@RequestBody Map<String, String> regData) throws ParseException {
+        String getUserId = regData.get("userId");
+        int UserId = Integer.parseInt(getUserId);
+
+        String getStudyId = regData.get("studyId");
+        int StudyId = Integer.parseInt(getStudyId);
+
+        String getstudyScDate = regData.get("studyScDate");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date studyScDate = format.parse(getstudyScDate);
+        java.sql.Date sqlDate = new java.sql.Date(studyScDate.getTime());
+
+        String getstudyScContent = regData.get("studyScContent");
+
+        String getstudyScUserLimit = regData.get("studyScUserLimit");
+        int studyScUserLimit = Integer.parseInt(getstudyScUserLimit);
+
+        ScheduleDAO dao = new ScheduleDAO();
+        boolean isTrue = dao.scheduleInsert(UserId, StudyId, sqlDate, getstudyScContent, studyScUserLimit);
         if (isTrue) System.out.println(HttpStatus.OK);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
