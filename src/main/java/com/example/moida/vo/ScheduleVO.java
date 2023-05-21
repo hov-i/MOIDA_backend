@@ -16,4 +16,8 @@ public class ScheduleVO {
     private int studyScUserLimit;
     private int studyScUserCount;
     private int userId;
+    private String userName;
+    private String userIntro;
+    private String userImg;
+    private int studyScMemId;
 }

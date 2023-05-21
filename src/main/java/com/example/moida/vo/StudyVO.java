@@ -11,7 +11,7 @@ import java.sql.Date;
 @Setter
 public class StudyVO {
     private int studyId;
-    private String studyMgrId;
+    private int studyMgrId;
     private String studyName;
     private String studyCategory;
     private int studyUserLimit;

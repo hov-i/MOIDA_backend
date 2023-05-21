@@ -82,7 +82,7 @@ public class StudyDAO {
                 if (num == 1) vo.setTagName(vo.getTagName() + " #" + rs.getString("TAG_NAME"));
                 else {
                     vo.setStudyId(studyId);
-                    vo.setStudyMgrId(rs.getString("STUDY_MGR_ID"));
+                    vo.setStudyMgrId(rs.getInt("STUDY_MGR_ID"));
                     vo.setStudyName(rs.getString("STUDY_NAME"));
                     vo.setStudyCategory(rs.getString("STUDY_CATEGORY"));
                     vo.setStudyUserLimit(rs.getInt("STUDY_USER_LIMIT"));
@@ -111,9 +111,10 @@ public class StudyDAO {
         try {
             conn = Common.getConnection();
             StringBuilder sql = new StringBuilder();
-            sql.append("SELECT UI.USER_ID, UI.NICKNAME, UI.INTRO ");
+            sql.append("SELECT UI.USER_ID, SI.STUDY_MGR_ID, UI.NICKNAME, UI.INTRO ");
             sql.append("FROM USER_INFO UI ");
             sql.append("JOIN STUDY_USER SU ON UI.USER_ID = SU.USER_ID ");
+            sql.append("JOIN STUDY_INFO SI ON SU.STUDY_ID = SI.STUDY_ID ");
             sql.append("WHERE SU.STUDY_ID = ? ");
 
             pstmt = conn.prepareStatement(sql.toString());
@@ -122,6 +123,7 @@ public class StudyDAO {
             int num = 0;
             while (rs.next()) {
                 vo.setStudyId(studyid);
+                vo.setStudyMgrId(rs.getInt("STUDY_MGR_ID"));
                 vo.setUserId(rs.getInt("USER_ID"));
                 vo.setUserName(rs.getString("NICKNAME"));
                 vo.setUserIntro(rs.getString("INTRO"));
@@ -208,5 +210,89 @@ public class StudyDAO {
         }
 
         return result == 1;
+    }
+
+    public boolean studyMgrNext (int studyId, int memId) {
+        int result = 0;
+        String sql = "UPDATE STUDY_INFO SET STUDY_MGR_ID = ? WHERE STUDY_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, memId);
+            pstmt.setInt(2, studyId);
+
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY_INFO DB 업데이트 결과 확인 : " + result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+        if(result == 1) return true;
+        else return false;
+    }
+
+    public boolean studyMemDelete (int studyId, int userId) {
+        int result = 0;
+        String sql = "DELETE FROM STUDY_USER WHERE STUDY_ID = ? AND USER_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, studyId);
+            pstmt.setInt(2, userId);
+
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY_USER DB 삭제 결과 확인 : " + result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+        if(result == 1) return true;
+        else return false;
+    }
+    public boolean studyJoinInsert (int studyId, int userId) {
+        int result = 0;
+        String sql = "INSERT INTO STUDY_USER(STUDY_USER_ID, STUDY_ID, USER_ID, REG_DATE) VALUES(SEQ_STUDY_USER_ID.NEXTVAL, ?, ?, SYSDATE) ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, studyId);
+            pstmt.setInt(2, userId);
+
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY_USER DB 추가 결과 확인 : " + result);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+        if(result == 1) return true;
+        else return false;
+    }
+    public boolean studyOut (int studyId, int userId) {
+        int result = 0;
+        String sql = "DELETE FROM STUDY_USER WHERE STUDY_ID = ? AND USER_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, studyId);
+            pstmt.setInt(2, userId);
+
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY_USER DB 삭제 결과 확인 : " + result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+        if(result == 1) return true;
+        else return false;
     }
 }

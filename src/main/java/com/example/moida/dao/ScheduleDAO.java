@@ -121,7 +121,57 @@ public class ScheduleDAO {
         else return false;
     }
 
+    public boolean scheduleDelete (int studyScId) {
+        int result = 0;
+        String sql = "DELETE FROM STUDY_SCHEDULE WHERE STUDY_SC_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, studyScId);
 
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY_SCHEDULE DB 삭제 결과 확인 : " + result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+        if(result == 1) return true;
+        else return false;
+    }
+
+    public List<ScheduleVO> getStudyScMem(int studyScId) {
+        List<ScheduleVO> scList = new ArrayList<>();
+
+        try {
+            conn = Common.getConnection();
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT SS.USER_ID, SSM.SC_MEMBER_ID, UI.USERNAME, UI.INTRO, UI.IMG FROM USER_INFO UI  ");
+            sql.append("JOIN STUDY_SC_MEMBER SSM ON UI.USER_ID = SSM.USER_ID ");
+            sql.append("JOIN STUDY_SCHEDULE SS ON SSM.STUDY_SC_ID = SS.STUDY_SC_ID ");
+            sql.append("WHERE SSM.STUDY_SC_ID = ? ");
+
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setInt(1, studyScId);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                ScheduleVO vo = new ScheduleVO();
+                vo.setStudyScId(studyScId);
+                vo.setStudyScMemId(rs.getInt("SC_MEMBER_ID"));
+                vo.setUserName(rs.getString("USERNAME"));
+                vo.setUserIntro(rs.getString("INTRO"));
+                vo.setUserImg(rs.getString("IMG"));
+                scList.add(vo);
+            }
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return scList;
+    }
 
 
 }
