@@ -42,9 +42,9 @@ public class UserController {
         String userName = loginData.get("userName");
         String pw = loginData.get("pw");
         UserInfoDAO dao = new UserInfoDAO();
-        boolean loginSuccess = dao.loginCheck(userName, pw);
-        if (loginSuccess) {
-            UserInfoVO userInfo = dao.getUserInfo(userName);
+        UserInfoVO userInfo = dao.loginCheck(userName, pw);
+
+        if (userInfo != null) {
             return new ResponseEntity<>(userInfo, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -96,17 +96,17 @@ public class UserController {
 
     //MY PAGE
     // 프로필 확인
-//    @GetMapping("/myInfo/{userId}")
-//    public ResponseEntity<UserInfoVO> getProfile(@PathVariable int userId) {
-//        UserInfoDAO dao = new UserInfoDAO();
-//        UserInfoVO userInfo = dao.getMyInfo(userId);
-//
-//        if (userInfo != null) {
-//            return new ResponseEntity<>(userInfo, HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
+    @GetMapping("/myInfo/{userId}")
+    public ResponseEntity<UserInfoVO> getProfile(@PathVariable int userId) {
+        UserInfoDAO dao = new UserInfoDAO();
+        UserInfoVO userInfo = dao.getMyInfo(userId);
+
+        if (userInfo != null) {
+            return new ResponseEntity<>(userInfo, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 
 
