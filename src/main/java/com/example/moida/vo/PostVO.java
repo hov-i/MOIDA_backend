@@ -25,17 +25,6 @@ public class PostVO {
     private String boardName;
     private String imgUrl;
     private List<CommentVO> comments;
-
-
-    // insert용 VO입니다
-    public PostVO(int userId, String title, String contents, String boardName, String imgUrl) {
-        this.userId = userId;
-        this.title = title;
-        this.contents = contents;
-        this.boardName = boardName;
-        this.imgUrl = imgUrl;
-    }
-
 }
 
 
