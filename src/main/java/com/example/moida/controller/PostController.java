@@ -74,7 +74,7 @@ public class PostController {
         if (result) System.out.println(HttpStatus.OK);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    // post recommned
+    // post recommend
     @PostMapping("/lounge/post/recommend")
     public ResponseEntity<Boolean> postRecommender (@RequestBody Map<String, String> data) {
         int getUserId = Integer.parseInt(data.get("userId"));
@@ -84,6 +84,8 @@ public class PostController {
         if (result) System.out.println(HttpStatus.OK);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+
     // post undoRecommend
     @PostMapping("/lounge/post/undoRecommend")
     public ResponseEntity<Boolean> postUndoRecommender (@RequestBody Map<String, String> data) {
@@ -113,6 +115,7 @@ public class PostController {
         if (insertResult) System.out.println(HttpStatus.OK);
         return new ResponseEntity<>(insertResult, HttpStatus.OK);
     }
+
 
     @PostMapping("/lounge/comment/update")
     public ResponseEntity<Boolean> commentModifier(@RequestBody Map<String, String> modData) {

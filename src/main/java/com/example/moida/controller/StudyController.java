@@ -110,7 +110,7 @@ public class StudyController {
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
-    @PostMapping("/study/studyRoom/Schedule/MemberInser")
+    @PostMapping("/study/studyRoom/Schedule/MemberInsert")
     public ResponseEntity<Boolean> scheduleMemRegister(@RequestBody Map<String, String> regData) throws ParseException {
         String getStudyScId = regData.get("studyScId");
         int studyScId = Integer.parseInt(getStudyScId);
