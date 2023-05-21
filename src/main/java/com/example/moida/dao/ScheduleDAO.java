@@ -16,7 +16,7 @@ public class ScheduleDAO {
 
     public List<ScheduleVO> getStudySc(int studyid) {
         List<ScheduleVO> scList = new ArrayList<>();
-        ScheduleVO vo = new ScheduleVO();
+
         try {
             conn = Common.getConnection();
             StringBuilder sql = new StringBuilder();
@@ -24,13 +24,15 @@ public class ScheduleDAO {
             sql.append("FROM STUDY_SCHEDULE SS ");
             sql.append("LEFT JOIN STUDY_SC_MEMBER SM ON SS.STUDY_SC_ID = SM.STUDY_SC_ID ");
             sql.append("WHERE SS.STUDY_ID = ? ");
-            sql.append("GROUP BY SS.STUDY_SC_ID, SS.USER_ID, SS.STUDY_ID, SS.STUDY_SC_DATE, SS.STUDY_SC_CONTENT, SS.STUDY_SC_USER_LIMIT");
+            sql.append("GROUP BY SS.STUDY_SC_ID, SS.USER_ID, SS.STUDY_ID, SS.STUDY_SC_DATE, SS.STUDY_SC_CONTENT, SS.STUDY_SC_USER_LIMIT ");
+            sql.append("ORDER BY SS.STUDY_SC_DATE");
 
             pstmt = conn.prepareStatement(sql.toString());
             pstmt.setInt(1, studyid);
             rs = pstmt.executeQuery();
-            int num = 0;
+
             while (rs.next()) {
+                ScheduleVO vo = new ScheduleVO();
                 vo.setStudyId(studyid);
                 vo.setStudyScId(rs.getInt("STUDY_SC_ID"));
                 vo.setUserId(rs.getInt("USER_ID"));
@@ -70,7 +72,51 @@ public class ScheduleDAO {
         }
         Common.close(pstmt);
         Common.close(conn);
+        if(result == 1) return true;
+        else return false;
+    }
 
+    public boolean scheduleMemInsert (int studyScId, int userId) {
+        int result = 0;
+        String sql = "INSERT INTO STUDY_SC_MEMBER(SC_MEMBER_ID, STUDY_SC_ID, USER_ID) VALUES (SEQ_SC_MEMBER_ID.NEXTVAL, ?, ?) ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, studyScId);
+            pstmt.setInt(2, userId);
+
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY_SC_MEMBER DB 추가 결과 확인 : " + result);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+        if(result == 1) return true;
+        else return false;
+    }
+
+    public boolean scheduleMemDelete (int studyScId, int userId) {
+        int result = 0;
+        String sql = "DELETE FROM STUDY_SC_MEMBER WHERE STUDY_SC_ID = ? AND USER_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, studyScId);
+            pstmt.setInt(2, userId);
+
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY_SC_MEMBER DB 삭제 결과 확인 : " + result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
         if(result == 1) return true;
         else return false;
     }

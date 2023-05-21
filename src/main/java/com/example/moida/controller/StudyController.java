@@ -110,6 +110,34 @@ public class StudyController {
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
+    @PostMapping("/study/studyRoom/Schedule/MemberInser")
+    public ResponseEntity<Boolean> scheduleMemRegister(@RequestBody Map<String, String> regData) throws ParseException {
+        String getStudyScId = regData.get("studyScId");
+        int studyScId = Integer.parseInt(getStudyScId);
+
+        String getUserId = regData.get("userId");
+        int userId = Integer.parseInt(getUserId);
+
+        ScheduleDAO dao = new ScheduleDAO();
+        boolean isTrue = dao.scheduleMemInsert(studyScId, userId);
+        if (isTrue) System.out.println(HttpStatus.OK);
+        return new ResponseEntity<>(isTrue, HttpStatus.OK);
+    }
+
+    @PostMapping("/study/studyRoom/Schedule/MemberDelete")
+    public ResponseEntity<Boolean> scheduleMemDelete(@RequestBody Map<String, String> regData) throws ParseException {
+        String getStudyScId = regData.get("studyScId");
+        int studyScId = Integer.parseInt(getStudyScId);
+
+        String getUserId = regData.get("userId");
+        int userId = Integer.parseInt(getUserId);
+
+        ScheduleDAO dao = new ScheduleDAO();
+        boolean isTrue = dao.scheduleMemDelete(studyScId, userId);
+        if (isTrue) System.out.println(HttpStatus.OK);
+        return new ResponseEntity<>(isTrue, HttpStatus.OK);
+    }
+
 
 
 }

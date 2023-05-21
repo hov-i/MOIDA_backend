@@ -27,9 +27,9 @@ public class StoryDAO {
                 String study_name = rs.getString("STUDY_NAME");
 
                 StoryVO vo = new StoryVO();
-                vo.setStory_img(story_img);
-                vo.setStory_name(story_name);
-                vo.setStudy_name(study_name);
+//                vo.setStoryImg(story_img);
+//                vo.setStory_name(story_name);
+//                vo.setStudy_name(study_name);
                 list.add(vo);
             }
             Common.close(rs);
