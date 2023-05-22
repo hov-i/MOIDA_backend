@@ -25,9 +25,9 @@ public class StoryVO {
     private String nickname; // join 으로 사용할 예정
     private int storyLike;
     private String regTime;
-    private int studyId;
-    private String studyColor; // join 으로 사용할 예정
-    private String studyDesc; // join 으로 사용할 예정
+    private int studyId; // join 으로 사용할 예정
+    private String studyProfile; // join 으로 사용할 예정
+    private String studyIntro; // join 으로 사용할 예정
     private String studyTag; // join 으로 사용할 예정
     private String contents;
     private List<CommentVO> comments; // join 으로 사용할 예정

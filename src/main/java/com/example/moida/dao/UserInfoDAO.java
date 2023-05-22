@@ -19,37 +19,37 @@ public class UserInfoDAO {
     boolean isLogIn = false;
     public String loginId = null;
 
-
+    private static final String DEFAULT_PROFILE_IMAGE_URL = "https://example.com/Images/LOGO_imgOnly.png";
     //회원 가입(OK)
     public boolean memberRegister(String userName, String pw, String pwConfirm, String email, String phone, String nickname) {
         int result = 0;
         boolean success = false;
 
-        if (pw.equals(pwConfirm)) { // 비밀번호가 일치하는 경우
-            String sql = "INSERT INTO USER_INFO(USERNAME, PW, EMAIL, PHONE, NICKNAME, JOIN_DATE) VALUES(?,?,?,?,?,SYSDATE)";
+        // 회원 가입 시 기본 프로필 이미지 URL 설정
+        String img = DEFAULT_PROFILE_IMAGE_URL;
 
-            try {
-                conn = Common.getConnection();
-                pStmt = conn.prepareStatement(sql);
-                pStmt.setString(1, userName);
-                pStmt.setString(2, pw);
-                pStmt.setString(3, email);
-                pStmt.setString(4, phone);
-                pStmt.setString(5, nickname);
-                result = pStmt.executeUpdate();
+        String sql = "INSERT INTO USER_INFO(USERNAME, PW, EMAIL, PHONE, NICKNAME, IMG, JOIN_DATE) VALUES(?,?,?,?,?,?,SYSDATE)";
 
-                if (result > 0) {
-                    System.out.println("회원가입이 완료되었습니다. " + result);
-                    success = true;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                Common.close(pStmt);
-                Common.close(conn);
+        try {
+            conn = Common.getConnection();
+            pStmt = conn.prepareStatement(sql);
+            pStmt.setString(1, userName);
+            pStmt.setString(2, pw);
+            pStmt.setString(3, email);
+            pStmt.setString(4, phone);
+            pStmt.setString(5, nickname);
+            pStmt.setString(6, img);  // 이미지 URL 추가
+            result = pStmt.executeUpdate();
+
+            if (result > 0) {
+                System.out.println("회원가입이 완료되었습니다. " + result);
+                success = true;
             }
-        } else { // 비밀번호가 일치하지 않는 경우
-            System.out.println("비밀번호가 일치하지 않습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            Common.close(pStmt);
+            Common.close(conn);
         }
 
         return success;
@@ -114,48 +114,36 @@ public class UserInfoDAO {
     }
 
     // 로그인
-    public boolean loginCheck(String userName, String pw) {
+    public UserInfoVO loginCheck(String userName, String pw) {
         UserInfoVO userInfo = null;
-        boolean loginSuccess = false;
         try {
             conn = Common.getConnection();
-            stmt = conn.createStatement();
-            String sql = "SELECT USERNAME, PW, EMAIL, NICKNAME, USER_ID, PHONE, IMG, INTRO FROM USER_INFO WHERE USERNAME = '" + userName + "'";
-            rs = stmt.executeQuery(sql);
+            PreparedStatement pstmt = conn.prepareStatement("SELECT USERNAME, PW, EMAIL, NICKNAME, USER_ID, PHONE, IMG, INTRO FROM USER_INFO WHERE USERNAME = ? AND PW = ?");
+            pstmt.setString(1, userName);
+            pstmt.setString(2, pw);
+            ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()) {
-                String userNameSql = rs.getString("USERNAME");
-                String pwSql = rs.getString("PW");
-                if (userName.equals(userNameSql) && pw.equals(pwSql)) {
-                    String email = rs.getString("EMAIL");
-                    String nickname = rs.getString("NICKNAME");
-                    int userId = rs.getInt("USER_ID");
-                    String phone = rs.getString("PHONE");
-                    String img = rs.getString("IMG");
-                    String intro = rs.getString("INTRO");
-
-                    userInfo = new UserInfoVO();
-                    userInfo.setUserName(userNameSql);
-                    userInfo.setEmail(email);
-                    userInfo.setNickname(nickname);
-                    userInfo.setUserId(userId);
-                    userInfo.setPhone(phone);
-                    userInfo.setImg(img);
-                    userInfo.setIntro(intro);
-
-                    loginSuccess = true;
-                    break;
-                }
+            if (rs.next()) {
+                userInfo = new UserInfoVO();
+                userInfo.setUserName(rs.getString("USERNAME"));
+                userInfo.setPw(rs.getString("PW"));
+                userInfo.setEmail(rs.getString("EMAIL"));
+                userInfo.setNickname(rs.getString("NICKNAME"));
+                userInfo.setUserId(rs.getInt("USER_ID"));
+                userInfo.setPhone(rs.getString("PHONE"));
+                userInfo.setImg(rs.getString("IMG"));
+                userInfo.setIntro(rs.getString("INTRO"));
             }
 
             Common.close(rs);
-            Common.close(stmt);
+            Common.close(pstmt);
             Common.close(conn);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return loginSuccess;
+        return userInfo;
     }
+
 
 
 
@@ -208,6 +196,35 @@ public class UserInfoDAO {
 //
 
     //MY Page
+    // 내 정보 조회
+    public UserInfoVO getMyInfo(int userId) {
+        UserInfoVO userInfo = null;
+        try {
+            conn = Common.getConnection();
+            String sql = "SELECT * FROM USER_INFO WHERE USER_ID = ?";
+            pStmt = conn.prepareStatement(sql);
+            pStmt.setInt(1, userId);
+            rs = pStmt.executeQuery();
+            if (rs.next()) {
+                userInfo = new UserInfoVO();
+                userInfo.setNickname(rs.getString("NICKNAME"));
+                userInfo.setEmail(rs.getString("EMAIL"));
+                userInfo.setPhone(rs.getString("PHONE"));
+                userInfo.setImg(rs.getString("IMG"));
+                userInfo.setJoinDate(rs.getDate("JOIN_DATE"));
+            }
+            Common.close(rs);
+            Common.close(pStmt);
+            Common.close(conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userInfo;
+    }
+
+
+
+
     // 프로필 수정
     // 이메일 변경(OK)
     public boolean updateEmail(String userId, String email) {
@@ -381,13 +398,13 @@ public class UserInfoDAO {
 
         try {
             conn = Common.getConnection();
-            pStmt = conn.prepareStatement("SELECT * FROM USER_INFO WHERE USERNAME = ?");
+            pStmt = conn.prepareStatement("SELECT * FROM USER_INFO WHERE USER_ID = ?");
             pStmt.setString(1, userId);
             rs = pStmt.executeQuery();
             if (rs.next()) {
                 String dbPw = rs.getString("PW");
                 if (dbPw.equals(pw)) { // 입력한 비밀번호와 일치하면 탈퇴 진행
-                    pStmt = conn.prepareStatement("DELETE FROM USER_INFO WHERE USERNAME = ?");
+                    pStmt = conn.prepareStatement("DELETE FROM USER_INFO WHERE USER_ID = ?");
                     pStmt.setString(1, userId);
                     pStmt.executeUpdate();
                     result = true;
