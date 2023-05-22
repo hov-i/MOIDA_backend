@@ -34,14 +34,14 @@ public class StoryVO {
 
 
     // Story 작성 insert VO
-    public StoryVO(int studyId, int userId, String title, String contents, String imgUrl) {
-
-        this.studyId = studyId;
-        this.userId = userId;
-        this.title = title;
-        this.contents = contents;
-        this.imgUrl = imgUrl;
-    }
+//    public StoryVO(int studyId, int userId, String title, String contents, String imgUrl) {
+//
+//        this.studyId = studyId;
+//        this.userId = userId;
+//        this.title = title;
+//        this.contents = contents;
+//        this.imgUrl = imgUrl;
+//    }
 
 }
 
