@@ -32,7 +32,7 @@ public class CommentDAO {
             conn = Common.getConnection();
             StringBuilder sql = new StringBuilder();
 
-            sql.append("SELECT P.*, U.NICKNAME, U.IMG_URL AS USER_IMG_URL FROM POST_COMMENT P INNER JOIN USER_INFO U ");
+            sql.append("SELECT P.*, U.NICKNAME, U.IMG AS USER_IMG_URL FROM POST_COMMENT P INNER JOIN USER_INFO U ");
             sql.append("ON P.USER_ID = U.USER_ID WHERE POST_ID = ? ");
             sql.append("START WITH PARENT_COMMENT_ID IS NULL ");
             sql.append("CONNECT BY PRIOR POST_COMMENT_ID = PARENT_COMMENT_ID ");

@@ -125,7 +125,7 @@ public class PostDAO {
 
         // 게시물 조회 쿼리문
         StringBuilder sql1 = new StringBuilder();
-        sql1.append("SELECT P.*, U.NICKNAME, U.IMG_URL AS USER_IMG_URL FROM POST P INNER JOIN USER_INFO U ");
+        sql1.append("SELECT P.*, U.NICKNAME, U.IMG AS USER_IMG_URL FROM POST P INNER JOIN USER_INFO U ");
         sql1.append("ON P.USER_ID = U.USER_ID ");
         sql1.append("WHERE POST_ID = ? ");
 
