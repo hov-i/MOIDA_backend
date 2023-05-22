@@ -60,38 +60,6 @@ public class UserController {
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
-    // 이메일 보내기 -- 오류 재확인 필요
-    @Autowired
-    private MailDAO mailDAO;
-
-    @ApiOperation(value = "임시 비밀번호 전송", notes = "전송한 임시 비밀번호를 반환한다.", response = Map.class)
-    @PostMapping("/sendmail")
-    public ResponseEntity<Map<String, Object>> sendMail(@RequestBody Map<String, String> map) {
-        System.out.println(map.get("type"));
-        System.out.println(map.get("email"));
-        Map<String, Object> resultMap = new HashMap<>();
-        HttpStatus status = null;
-
-        String temporaryPassword = mailDAO.makeCode(10); // 임시 비밀번호 생성
-
-        boolean isEmailSent = mailDAO.sendMail(map.get("type"), map.get("email"));
-        if (isEmailSent) {
-            resultMap.put("message", "SUCCESS");
-            resultMap.put("temporaryPassword", temporaryPassword);
-        } else {
-            resultMap.put("message", "FAIL");
-        }
-        status = HttpStatus.ACCEPTED;
-
-        return new ResponseEntity<>(resultMap, status);
-    }
-
-
-
-    // 비밀번호 찾기
-
-
-
 
 
     //MY PAGE

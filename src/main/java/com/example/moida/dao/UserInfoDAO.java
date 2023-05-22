@@ -2,7 +2,9 @@ package com.example.moida.dao;
 
 import com.example.moida.common.Common;
 import com.example.moida.vo.UserInfoVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -156,7 +158,15 @@ public class UserInfoDAO {
 
     // 아이디 찾기
 
-    // 비밀번호 찾기
+    // 비밀번호 임시 비밀번호로 변경
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    public boolean changePasswordToTemporary(String username, String temporaryPassword) {
+        String sql = "UPDATE users SET password = ? WHERE username = ?";
+        int rowsAffected = jdbcTemplate.update(sql, temporaryPassword, username);
+        return rowsAffected > 0;
+    }
 
 
 
