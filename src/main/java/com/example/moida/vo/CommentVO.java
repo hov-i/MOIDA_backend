@@ -21,11 +21,11 @@ public class CommentVO {
 
 
     // insert 용 VO
-    CommentVO (int userId, int postId, int parentId, String contents) {
-        this.userId = userId;
-        this.postId = postId;
-        this.parentId = parentId;
-        this.contents = contents;
-    }
+//    CommentVO (int userId, int postId, int parentId, String contents) {
+//        this.userId = userId;
+//        this.postId = postId;
+//        this.parentId = parentId;
+//        this.contents = contents;
+//    }
 
 }

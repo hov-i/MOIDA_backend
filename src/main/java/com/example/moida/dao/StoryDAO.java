@@ -54,16 +54,16 @@ public class StoryDAO {
     }
 
 
-    // 스토리 포스트 조회 {userId} + 조회수
+    // 스토리 포스트 {userId} // 조회수
     public StoryVO getStoryById(int storyId) {
         StoryVO vo = new StoryVO();
 
         // 포스트 조회 쿼리문
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT S.*, U.IMG_URL AS USER_IMG_URL, U.NICKNAME, SI.STUDY_PROFILE, SI.STUDY_NAME, SI.STUDY_INTRO, T.TAG_NAME");
+        sql.append("SELECT S.*, U.IMG AS USER_IMG_URL, U.NICKNAME, SI.STUDY_PROFILE, SI.STUDY_NAME, SI.STUDY_INTRO, T.TAG_NAME");
         sql.append("FROM STORY S");
         sql.append("INNER JOIN USER_INFO U ON S.USER_ID = U.USER_ID ");
-        sql.append("JOIN STUDY SI ON S.STUDY_ID = SI.STUDY_ID");
+        sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID");
         sql.append("JOIN STUDY_TAG_REL STR ON SI.STUDY_ID = STR.STUDY_ID");
         sql.append("JOIN TAGS T ON STR.TAG_ID = T.TAG_ID ");
         sql.append("WHERE STORY_ID = ? ");

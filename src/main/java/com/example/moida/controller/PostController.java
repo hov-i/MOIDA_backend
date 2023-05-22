@@ -127,6 +127,15 @@ public class PostController {
         return new ResponseEntity<>(updateResult, HttpStatus.OK);
     }
 
+    // comment 삭제
+    @PostMapping("/post/comment/delete")
+    public ResponseEntity<Boolean> commentDelete(@RequestBody Map<String, String> delData) {
+        int commentId = Integer.parseInt(delData.get("commentId"));
+        CommentDAO dao = new CommentDAO();
+        boolean isTrue = dao.postCommentDelete(commentId);
+        return new ResponseEntity<>(isTrue, HttpStatus.OK);
+    }
+
 
 
 }

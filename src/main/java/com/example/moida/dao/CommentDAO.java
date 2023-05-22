@@ -73,6 +73,7 @@ public class CommentDAO {
 
 
 
+    // 포스트 댓글 기능
     public boolean postCommentInsert(int userId, int postId, String contents) {
         int result = 0;
         String sql = "INSERT INTO POST_COMMENT(USER_ID, POST_ID, CONTENTS) VALUES(?, ?, ?) ";
@@ -97,6 +98,8 @@ public class CommentDAO {
         if(result == 1) return true;
         else return false;
     }
+
+
     // 대댓글 INSERT 오버로딩
     public boolean postCommentInsert(int userId, int postId, int parentId, String contents) {
         int result = 0;
@@ -149,7 +152,8 @@ public class CommentDAO {
         else return false;
     }
 
-    // 댓글 DELETE
+
+    // post 댓글 DELETE
     public boolean postCommentDelete(int commentId) {
         int result = 0;
         String sql = "DELETE FROM POST_COMMENT WHERE POST_COMMENT_ID = ? ";
@@ -160,6 +164,110 @@ public class CommentDAO {
             pstmt.setInt(1, commentId);
             result = pstmt.executeUpdate();
             System.out.println("post DB 결과 확인 : " + result);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+
+        if(result == 1) return true;
+        else return false;
+    }
+
+
+    // 스토리 댓글 추가
+    public boolean storyCommentInsert(int userId, int storyId, String contents) {
+        int result = 0;
+        String sql = "INSERT INTO STORY_COMMENT(USER_ID, STORY_ID, CONTENTS) VALUES(?, ?, ?) ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, storyId);
+            pstmt.setString(3, contents);
+
+            result = pstmt.executeUpdate();
+            System.out.println("story DB 결과 확인 : " + result);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+
+        if(result == 1) return true;
+        else return false;
+    }
+
+
+    // story 대댓글 INSERT 오버로딩
+    public boolean storyCommentInsert(int userId, int storyId, int parentId, String contents) {
+        int result = 0;
+        String sql = "INSERT INTO POST_COMMENT(USER_ID, STORY_ID, PARENT_COMMENT_ID, CONTENTS) VALUES(?, ?, ?, ?) ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, storyId);
+            pstmt.setInt(3, parentId);
+            pstmt.setString(4, contents);
+
+            result = pstmt.executeUpdate();
+            System.out.println("story DB 결과 확인 : " + result);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Common.close(pstmt);
+        Common.close(conn);
+
+        if(result == 1) return true;
+        else return false;
+    }
+
+
+    // story 댓글 UPDATE
+    public boolean storyCommentUpdate(int commentId, String contents) {
+        int result = 0;
+        String sql = "UPDATE STORY_COMMENT SET CONTENTS = ? WHERE STORY_COMMENT_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setString(1, contents);
+            pstmt.setInt(2, commentId);
+            result = pstmt.executeUpdate();
+            System.out.println("story DB 결과 확인 : " + result);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+
+        if(result == 1) return true;
+        else return false;
+    }
+
+    // story 댓글 DELETE
+    public boolean storyCommentDelete(int commentId) {
+        int result = 0;
+        String sql = "DELETE FROM STORY_COMMENT WHERE STORY_COMMENT_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, commentId);
+            result = pstmt.executeUpdate();
+            System.out.println("story DB 결과 확인 : " + result);
 
 
         } catch (Exception e) {

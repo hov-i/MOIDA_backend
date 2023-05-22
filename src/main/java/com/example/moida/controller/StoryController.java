@@ -83,8 +83,46 @@ public class StoryController {
 
 
     // comment 추가
+    @PostMapping("/story/comment/insert")
+    public ResponseEntity<Boolean> commentRegister(@RequestBody Map<String, String> regData) {
+        int getUserId = Integer.parseInt(regData.get("userId"));
+        int getStoryId = Integer.parseInt(regData.get("storyId"));
+        int getParentId = regData.get("parentId") != null ? Integer.parseInt(regData.get("parentId")) : 0;
+        String getContents = regData.get("contents");
+        CommentDAO dao = new CommentDAO();
+        boolean insertResult;
+        if (getParentId < 1) {
+            insertResult = dao.storyCommentInsert(getUserId, getStoryId, getContents);
+        } else { // parentId 가 있을 때 ( 대댓글 등록 )
+            insertResult = dao.storyCommentInsert(getUserId, getStoryId, getParentId, getContents);
+        }
+        if (insertResult) System.out.println(HttpStatus.OK);
+        return new ResponseEntity<>(insertResult, HttpStatus.OK);
+    }
+
 
     // comment 수정
+    @PostMapping("/story/comment/update")
+    public ResponseEntity<Boolean> commentModifier(@RequestBody Map<String, String> modData) {
+        int getCommentId = Integer.parseInt(modData.get("commentId"));
+        String getContents = modData.get("contents");
+        CommentDAO dao = new CommentDAO();
+        boolean updateResult = dao.storyCommentUpdate(getCommentId, getContents);
+        if (updateResult) System.out.println(HttpStatus.OK);
+        return new ResponseEntity<>(updateResult, HttpStatus.OK);
+    }
+
+
+    // comment 삭제
+    @PostMapping("/story/comment/delete")
+    public ResponseEntity<Boolean> commentDelete(@RequestBody Map<String, String> delData) {
+        int commentId = Integer.parseInt(delData.get("commentId"));
+        CommentDAO dao = new CommentDAO();
+        boolean isTrue = dao.storyCommentDelete(commentId);
+        return new ResponseEntity<>(isTrue, HttpStatus.OK);
+    }
+
+
 
 
 }
