@@ -73,15 +73,6 @@ public class StoryController {
     }
 
     // Story 삭제 (Delete)
-    @PostMapping("/del")
-    public ResponseEntity<Boolean> memberDelete(@RequestBody Map<String, String> delData) {
-        String userId = delData.get("userId");
-        String pw = delData.get("pw");
-        UserInfoDAO dao = new UserInfoDAO();
-        boolean isTrue = dao.memberDelete(userId, pw);
-        return new ResponseEntity<>(isTrue, HttpStatus.OK);
-    }
-
     @PostMapping("/story/post/delete")
     public ResponseEntity<Boolean> storyDelete(@RequestBody Map<String, String> delData) {
         int storyId = Integer.parseInt(delData.get("storyId"));
