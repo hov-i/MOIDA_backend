@@ -2,6 +2,7 @@ package com.example.moida.dao;
 
 import com.example.moida.common.Common;
 import com.example.moida.vo.PostVO;
+import io.swagger.annotations.ExampleProperty;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -118,23 +119,42 @@ public class PostDAO {
         return list;
     }
 
+//
+//    // 조회수 증가
+    public boolean viewIncrease(int postId) {
+        int result = 0;
+        String sql = "UPDATE POST SET VIEWS = VIEWS + 1 WHERE POST_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, postId);
+            result = pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
 
-    // 게시믈 조회 + 조회했을 때 조회 수를 증가시킵니다.
+        if (result == 1) {
+            System.out.println("조회수 1증가");
+            return true;
+        } else return false;
+    }
+
+    // 게시믈 조회
     public PostVO getPostById(int postId) {
         PostVO vo = new PostVO();
 
         // 게시물 조회 쿼리문
-        StringBuilder sql1 = new StringBuilder();
-        sql1.append("SELECT P.*, U.NICKNAME, U.IMG AS USER_IMG_URL FROM POST P INNER JOIN USER_INFO U ");
-        sql1.append("ON P.USER_ID = U.USER_ID ");
-        sql1.append("WHERE POST_ID = ? ");
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT P.*, U.NICKNAME, U.IMG AS USER_IMG_URL FROM POST P INNER JOIN USER_INFO U ");
+        sql.append("ON P.USER_ID = U.USER_ID ");
+        sql.append("WHERE POST_ID = ? ");
 
-        // 조회 수 증가 쿼리문
-        String sql2 = "UPDATE POST SET VIEWS = VIEWS + 1 WHERE POST_ID = ? ";
 
         try {
             conn = Common.getConnection();
-            pstmt = conn.prepareStatement(sql1.toString());
+            pstmt = conn.prepareStatement(sql.toString());
             pstmt.setInt(1, postId);
             rSet = pstmt.executeQuery();
             if (rSet.next()) {
@@ -150,10 +170,6 @@ public class PostDAO {
                 vo.setImgUrl(rSet.getString("IMG_URL"));
                 vo.setBoardName(rSet.getString("BOARD_NAME"));
             }
-            pstmt = conn.prepareStatement(sql2);
-            pstmt.setInt(1, postId);
-            pstmt.executeUpdate();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -192,7 +208,7 @@ public class PostDAO {
         else return false;
     }
 
-    //     게시물 수정
+    // 게시물 수정
     public boolean postUpdate(String title, String contents, int postId) {
         int result = 0;
         String sql = "UPDATE POST SET TITLE = ? CONTENTS= ? WHERE POST_ID = ? ";
@@ -238,6 +254,28 @@ public class PostDAO {
         else return false;
     }
 
+    // 추천한 게시물 리스트
+    public List<Integer> getRecommendList (int userId) {
+        List<Integer> list = new ArrayList<>();
+        String sql = "SELECT POST_ID FROM POST_RECOMMEND WHERE USER_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userId);
+            rSet = pstmt.executeQuery();
+
+            while (rSet.next()) {
+                int postId = rSet.getInt("POST_ID");
+                list.add(postId);
+            }
+            Common.close(rSet);
+            Common.close(pstmt);
+            Common.close(conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
     // 게시물 추천
     public boolean recommendPost(int userId, int postId) {
@@ -255,10 +293,11 @@ public class PostDAO {
             result = pstmt.executeUpdate();
             System.out.println("post DB 결과 확인 : " + result);
 
-            if (result == 0) {
+            if (result == 1) {
                 pstmt = conn.prepareStatement(sql2);
                 pstmt.setInt(1, postId);
                 result = pstmt.executeUpdate();
+                System.out.println("result = "  + result);
                 conn.commit();
             } else {
                 conn.rollback();
@@ -298,7 +337,7 @@ public class PostDAO {
             result = pstmt.executeUpdate();
             System.out.println("post DB 결과 확인 : " + result);
 
-            if (result == 0) {
+            if (result == 1) {
                 pstmt = conn.prepareStatement(sql2);
                 pstmt.setInt(1, postId);
                 result = pstmt.executeUpdate();

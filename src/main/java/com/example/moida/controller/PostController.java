@@ -16,11 +16,7 @@ import java.util.Map;
 @RestController
 public class PostController {
 
-    /**
-     * GET : 게시판에 따른 게시물 조회
-     * @param boardName (ex - 'free' , 'qna')
-     * @return ResponseEntity<List<PostVO>>
-     */
+    // GET postList
     @GetMapping("/lounge/{boardName}")
     public ResponseEntity<List<PostVO>> postList(@PathVariable String boardName, @RequestParam(value = "lastId", required = false) Integer lastId) {
         System.out.println("BOARD_NAME : " + boardName);
@@ -33,7 +29,6 @@ public class PostController {
         }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
-
 
     @GetMapping("/lounge/{boardName}/{postId}")
     public ResponseEntity<PostVO> viewPost(@PathVariable String boardName, @PathVariable int postId) {
@@ -74,6 +69,33 @@ public class PostController {
         if (result) System.out.println(HttpStatus.OK);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    // post delete
+    @PostMapping("/lounge/post/delete")
+    public ResponseEntity<Boolean> postDelete(@RequestParam(value = "postId") int postId) {
+        PostDAO dao = new PostDAO();
+        boolean result = dao.postDelete(postId);
+        if (result) System.out.println(HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    // post view increase
+    @PostMapping("/lounge/post/view")
+    public ResponseEntity<Boolean> postViewIncrease(@RequestParam(value="postId") int postId) {
+        System.out.println(postId);
+        PostDAO dao = new PostDAO();
+        boolean result = dao.viewIncrease(postId);
+        if (result) System.out.println(HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    // GET recommendList
+    @GetMapping("/lounge/post/recommendList")
+    public ResponseEntity<List<Integer>> postRecommendList(@RequestParam(value="userId") int userId) {
+        PostDAO dao = new PostDAO();
+        List<Integer> list = dao.getRecommendList(userId);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
     // post recommend
     @PostMapping("/lounge/post/recommend")
     public ResponseEntity<Boolean> postRecommender (@RequestBody Map<String, String> data) {
