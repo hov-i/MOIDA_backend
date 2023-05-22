@@ -50,7 +50,7 @@ public class ScheduleDAO {
         return scList;
     }
 
-    public boolean scheduleInsert (int userId, int studyId, Date studyScDate, String studyScContent, int studyScUSerLimit) {
+    public boolean scheduleInsert(int userId, int studyId, Date studyScDate, String studyScContent, int studyScUSerLimit) {
         int result = 0;
         String sql = "INSERT INTO STUDY_SCHEDULE(STUDY_SC_ID, USER_ID, STUDY_ID, STUDY_SC_DATE, STUDY_SC_CONTENT, STUDY_SC_USER_LIMIT) VALUES (SEQ_STUDY_SC_ID.NEXTVAL, ?, ?, ?, ?, ?) ";
         try {
@@ -72,11 +72,11 @@ public class ScheduleDAO {
         }
         Common.close(pstmt);
         Common.close(conn);
-        if(result == 1) return true;
+        if (result == 1) return true;
         else return false;
     }
 
-    public boolean scheduleMemInsert (int studyScId, int userId) {
+    public boolean scheduleMemInsert(int studyScId, int userId) {
         int result = 0;
         String sql = "INSERT INTO STUDY_SC_MEMBER(SC_MEMBER_ID, STUDY_SC_ID, USER_ID) VALUES (SEQ_SC_MEMBER_ID.NEXTVAL, ?, ?) ";
         try {
@@ -95,11 +95,11 @@ public class ScheduleDAO {
         }
         Common.close(pstmt);
         Common.close(conn);
-        if(result == 1) return true;
+        if (result == 1) return true;
         else return false;
     }
 
-    public boolean scheduleMemDelete (int studyScId, int userId) {
+    public boolean scheduleMemDelete(int studyScId, int userId) {
         int result = 0;
         String sql = "DELETE FROM STUDY_SC_MEMBER WHERE STUDY_SC_ID = ? AND USER_ID = ? ";
         try {
@@ -117,11 +117,11 @@ public class ScheduleDAO {
         }
         Common.close(pstmt);
         Common.close(conn);
-        if(result == 1) return true;
+        if (result == 1) return true;
         else return false;
     }
 
-    public boolean scheduleDelete (int studyScId) {
+    public boolean scheduleDelete(int studyScId) {
         int result = 0;
         String sql = "DELETE FROM STUDY_SCHEDULE WHERE STUDY_SC_ID = ? ";
         try {
@@ -137,7 +137,7 @@ public class ScheduleDAO {
         }
         Common.close(pstmt);
         Common.close(conn);
-        if(result == 1) return true;
+        if (result == 1) return true;
         else return false;
     }
 
@@ -173,5 +173,39 @@ public class ScheduleDAO {
         return scList;
     }
 
+    public List<ScheduleVO> getStudyMySc(int userId) {
+        List<ScheduleVO> scList = new ArrayList<>();
 
+        try {
+            conn = Common.getConnection();
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT SS.STUDY_SC_ID, SS.STUDY_SC_DATE, SS.STUDY_SC_CONTENT, SI.STUDY_NAME, SI.STUDY_PROFILE ");
+            sql.append("FROM STUDY_SC_MEMBER SSM ");
+            sql.append("JOIN STUDY_SCHEDULE SS ON SS.STUDY_SC_ID = SSM.STUDY_SC_ID ");
+            sql.append("JOIN STUDY_INFO SI ON SS.STUDY_ID = SI.STUDY_ID ");
+            sql.append("WHERE SSM.USER_ID = ? ");
+
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setInt(1, userId);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                ScheduleVO vo = new ScheduleVO();
+                vo.setUserId(userId);
+                vo.setStudyScId(rs.getInt("STUDY_SC_ID"));
+                vo.setStudyScDate(rs.getDate("STUDY_SC_DATE"));
+                vo.setStudyScContent(rs.getString("STUDY_SC_CONTENT"));
+                vo.setStudyName(rs.getString("STUDY_NAME"));
+                vo.setStudyProfile(rs.getString("STUDY_PROFILE"));
+                scList.add(vo);
+            }
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return scList;
+
+
+    }
 }
