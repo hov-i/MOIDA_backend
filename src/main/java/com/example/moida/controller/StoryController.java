@@ -29,7 +29,7 @@ public class StoryController {
 
 
     // Story{userId} 게시글
-    @GetMapping("/story/{userId}")
+    @GetMapping("/story/{storyId}")
     public ResponseEntity<StoryVO> StoryList(@PathVariable int studyId, @PathVariable int storyId) {
         System.out.println("Story Id : " + storyId);
         StoryDAO storyDAO = new StoryDAO();

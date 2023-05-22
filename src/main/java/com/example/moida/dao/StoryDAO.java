@@ -5,10 +5,14 @@ import com.example.moida.vo.CommentVO;
 import com.example.moida.vo.StoryVO;
 import com.example.moida.vo.StudyVO;
 
+import org.springframework.stereotype.Repository;
+
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class StoryDAO {
     private Connection conn = null;
     private ResultSet rs = null;
@@ -54,7 +58,7 @@ public class StoryDAO {
     }
 
 
-    // 스토리 포스트 {userId} // 조회수
+    // 스토리 포스트 {storyId} // 조회수
     public StoryVO getStoryById(int storyId) {
         StoryVO vo = new StoryVO();
 
