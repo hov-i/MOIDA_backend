@@ -20,4 +20,6 @@ public class ScheduleVO {
     private String userIntro;
     private String userImg;
     private int studyScMemId;
+    private String studyName;
+    private String studyProfile;
 }

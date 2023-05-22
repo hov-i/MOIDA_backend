@@ -57,6 +57,15 @@ public class StudyController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
+    // 스터디룸 나의 일정 리스트
+    @GetMapping("/study/mySc/{userId}")
+    public ResponseEntity<List<ScheduleVO>> viewStudyMySc(@PathVariable int userId) {
+        System.out.println("UserId : " + userId);
+        ScheduleDAO dao = new ScheduleDAO();
+        List<ScheduleVO> list = dao.getStudyMySc(userId);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
     //스터디 작성
     @PostMapping("/study/create")
     public ResponseEntity<Boolean> studyRegister(@RequestBody Map<String, String> regData) throws ParseException {
