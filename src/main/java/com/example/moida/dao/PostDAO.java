@@ -39,7 +39,6 @@ public class PostDAO {
                 String title = rSet.getString("TITLE");
                 String contents = rSet.getString("CONTENTS");
                 int views = rSet.getInt("VIEWS");
-                int commentsCount = rSet.getInt("COMMENTS_COUNT");
                 int recommend = rSet.getInt("RECOMMEND");
                 String imgUrl = rSet.getString("IMG_URL");
 
@@ -51,7 +50,6 @@ public class PostDAO {
                 vo.setTitle(title);
                 vo.setContents(contents);
                 vo.setViews(views);
-                vo.setCommentsCount(commentsCount);
                 vo.setRecommend(recommend);
                 vo.setImgUrl(imgUrl);
                 vo.setBoardName(boardName);
@@ -94,7 +92,6 @@ public class PostDAO {
                 String title = rSet.getString("TITLE");
                 String contents = rSet.getString("CONTENTS");
                 int views = rSet.getInt("VIEWS");
-                int commentsCount = rSet.getInt("COMMENTS_COUNT");
                 int recommend = rSet.getInt("RECOMMEND");
                 String imgUrl = rSet.getString("IMG_URL");
 
@@ -106,7 +103,6 @@ public class PostDAO {
                 vo.setTitle(title);
                 vo.setContents(contents);
                 vo.setViews(views);
-                vo.setCommentsCount(commentsCount);
                 vo.setRecommend(recommend);
                 vo.setImgUrl(imgUrl);
                 vo.setBoardName(boardName);
@@ -129,7 +125,7 @@ public class PostDAO {
 
         // 게시물 조회 쿼리문
         StringBuilder sql1 = new StringBuilder();
-        sql1.append("SELECT P.*, U.NICKNAME, U.IMG AS USER_IMG_URL FROM POST P INNER JOIN USER_INFO U ");
+        sql1.append("SELECT P.*, U.NICKNAME, U.IMG_URL AS USER_IMG_URL FROM POST P INNER JOIN USER_INFO U ");
         sql1.append("ON P.USER_ID = U.USER_ID ");
         sql1.append("WHERE POST_ID = ? ");
 
@@ -150,7 +146,6 @@ public class PostDAO {
                 vo.setTitle(rSet.getString("TITLE"));
                 vo.setContents(rSet.getString("CONTENTS"));
                 vo.setViews(rSet.getInt("VIEWS"));
-                vo.setCommentsCount(rSet.getInt("COMMENTS_COUNT"));
                 vo.setRecommend(rSet.getInt("RECOMMEND"));
                 vo.setImgUrl(rSet.getString("IMG_URL"));
                 vo.setBoardName(rSet.getString("BOARD_NAME"));

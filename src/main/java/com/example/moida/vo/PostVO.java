@@ -20,11 +20,11 @@ public class PostVO {
     private String title;
     private String contents;
     private int views;
-    private int commentsCount;
     private int recommend;
     private String boardName;
     private String imgUrl;
     private List<CommentVO> comments;
 }
+
 
 
