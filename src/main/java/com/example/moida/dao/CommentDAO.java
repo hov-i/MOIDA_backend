@@ -149,4 +149,27 @@ public class CommentDAO {
         else return false;
     }
 
+    // 댓글 DELETE
+    public boolean postCommentDelete(int commentId) {
+        int result = 0;
+        String sql = "DELETE FROM POST_COMMENT WHERE POST_COMMENT_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, commentId);
+            result = pstmt.executeUpdate();
+            System.out.println("post DB 결과 확인 : " + result);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+
+        if(result == 1) return true;
+        else return false;
+    }
+
 }
