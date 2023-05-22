@@ -66,7 +66,6 @@ public class MailDAO {
             result = true;
         } catch (MessagingException e) {
             e.printStackTrace();
-//            return result;
         }
 
         return result;

@@ -97,7 +97,7 @@ public class UserController {
     //MY PAGE
     // 프로필 확인
     @GetMapping("/myInfo/{userId}")
-    public ResponseEntity<UserInfoVO> getProfile(@PathVariable int userId) {
+    public ResponseEntity<UserInfoVO> getProfile(@PathVariable String userId) {
         UserInfoDAO dao = new UserInfoDAO();
         UserInfoVO userInfo = dao.getMyInfo(userId);
 
@@ -150,11 +150,11 @@ public class UserController {
 
     // POST : 닉네임 변경
     @PostMapping("/nickname")
-    public ResponseEntity<Boolean> updateNickname(@RequestBody Map<String, Object> nicknameData) {
+    public ResponseEntity<Boolean> updateNickname(@RequestBody Map<String, String> nicknameData) {
         System.out.println(nicknameData.get("userId"));
         System.out.println(nicknameData.get("nickname"));
-        int userId = (int) nicknameData.get("userId");
-        String nickname = (String) nicknameData.get("nickname");
+        String userId = nicknameData.get("userId");
+        String nickname = nicknameData.get("nickname");
 
         UserInfoDAO dao = new UserInfoDAO();
         boolean isUpdated = dao.updateNickname(userId, nickname);
@@ -163,11 +163,11 @@ public class UserController {
 
     // 이미지 url 업로드
     @PostMapping("/img")
-    public ResponseEntity<Boolean> uploadImageURL(@RequestBody Map<String, Object> imageURLData) {
+    public ResponseEntity<Boolean> uploadImageURL(@RequestBody Map<String, String> imageURLData) {
         System.out.println(imageURLData.get("userId"));
         System.out.println(imageURLData.get("img"));
-        int userId = (int) imageURLData.get("userId");
-        String img = (String) imageURLData.get("img");
+        String userId = imageURLData.get("userId");
+        String img = imageURLData.get("img");
 
         UserInfoDAO dao = new UserInfoDAO();
         boolean isUpdated = dao.uploadImageURL(userId, img);
@@ -176,11 +176,12 @@ public class UserController {
 
     // 자기소개 업로드
     @PostMapping("/intro")
-    public ResponseEntity<Boolean> uploadIntro(@RequestBody Map<String, Object> imageURLData) {
-        System.out.println(imageURLData.get("userId"));
-        System.out.println(imageURLData.get("intro"));
-        int userId = (int) imageURLData.get("userId");
-        String intro = (String) imageURLData.get("intro");
+    public ResponseEntity<Boolean> uploadIntro(@RequestBody Map<String, String> uploadIntroData) {
+        System.out.println(uploadIntroData.get("userId"));
+        System.out.println(uploadIntroData.get("intro"));
+        System.out.println(uploadIntroData.get("userId").getClass());
+        String userId = uploadIntroData.get("userId");
+        String intro = uploadIntroData.get("intro");
 
         UserInfoDAO dao = new UserInfoDAO();
         boolean isUpdated = dao.uploadIntro(userId, intro);

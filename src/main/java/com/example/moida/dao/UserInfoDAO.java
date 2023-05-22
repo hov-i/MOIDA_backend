@@ -19,7 +19,8 @@ public class UserInfoDAO {
     boolean isLogIn = false;
     public String loginId = null;
 
-    private static final String DEFAULT_PROFILE_IMAGE_URL = "https://example.com/Images/LOGO_imgOnly.png";
+    private static final String DEFAULT_PROFILE_IMAGE_URL = "https://firebasestorage.googleapis.com/v0/b/photo-moida.appspot.com/o/LOGO_imgOnly.png?alt=media&token=28c02812-d6d0-4b84-80f8-ef3103fa8462";
+    private static final String DEFAULT_PROFILE_INTRO = "자기 소개를 작성해 주세요.";
     //회원 가입(OK)
     public boolean memberRegister(String userName, String pw, String pwConfirm, String email, String phone, String nickname) {
         int result = 0;
@@ -27,8 +28,9 @@ public class UserInfoDAO {
 
         // 회원 가입 시 기본 프로필 이미지 URL 설정
         String img = DEFAULT_PROFILE_IMAGE_URL;
+        String intro = DEFAULT_PROFILE_INTRO;
 
-        String sql = "INSERT INTO USER_INFO(USERNAME, PW, EMAIL, PHONE, NICKNAME, IMG, JOIN_DATE) VALUES(?,?,?,?,?,?,SYSDATE)";
+        String sql = "INSERT INTO USER_INFO(USERNAME, PW, EMAIL, PHONE, NICKNAME, IMG, INTRO, JOIN_DATE) VALUES(?,?,?,?,?,?,?,SYSDATE)";
 
         try {
             conn = Common.getConnection();
@@ -39,6 +41,7 @@ public class UserInfoDAO {
             pStmt.setString(4, phone);
             pStmt.setString(5, nickname);
             pStmt.setString(6, img);  // 이미지 URL 추가
+            pStmt.setString(7, intro);
             result = pStmt.executeUpdate();
 
             if (result > 0) {
@@ -197,13 +200,13 @@ public class UserInfoDAO {
 
     //MY Page
     // 내 정보 조회
-    public UserInfoVO getMyInfo(int userId) {
+    public UserInfoVO getMyInfo(String userId) {
         UserInfoVO userInfo = null;
         try {
             conn = Common.getConnection();
             String sql = "SELECT * FROM USER_INFO WHERE USER_ID = ?";
             pStmt = conn.prepareStatement(sql);
-            pStmt.setInt(1, userId);
+            pStmt.setString(1, userId);
             rs = pStmt.executeQuery();
             if (rs.next()) {
                 userInfo = new UserInfoVO();
@@ -211,6 +214,7 @@ public class UserInfoDAO {
                 userInfo.setEmail(rs.getString("EMAIL"));
                 userInfo.setPhone(rs.getString("PHONE"));
                 userInfo.setImg(rs.getString("IMG"));
+                userInfo.setIntro(rs.getString("INTRO"));
                 userInfo.setJoinDate(rs.getDate("JOIN_DATE"));
             }
             Common.close(rs);
@@ -257,7 +261,7 @@ public class UserInfoDAO {
     }
 
 
-    // 비밀번호 변경(OK) - 이건 넣고 싶으면 아예 수정 구조를 변형해야 함...
+    // 비밀번호 변경(OK)
     public boolean updatePassword(String userId, String pw, String newPw) {
         boolean result = false;
         try {
@@ -289,7 +293,7 @@ public class UserInfoDAO {
     }
 
     // 닉네임 변경(OK)
-    public boolean updateNickname(int userId, String nickname) {
+    public boolean updateNickname(String userId, String nickname) {
         boolean result = false;
 
         try {
@@ -300,7 +304,7 @@ public class UserInfoDAO {
             if (rs.next() && rs.getInt("cnt") == 0) { // 중복되는 닉네임이 없으면 변경 가능
                 pStmt = conn.prepareStatement("UPDATE USER_INFO SET NICKNAME = ? WHERE USER_ID = ?");
                 pStmt.setString(1, nickname);
-                pStmt.setInt(2, userId);
+                pStmt.setString(2, userId);
                 pStmt.executeUpdate();
                 result = true;
             }
@@ -346,14 +350,14 @@ public class UserInfoDAO {
     }
 
     // 이미지 url 업로드
-    public boolean uploadImageURL(int userId, String img) {
+    public boolean uploadImageURL(String userId, String img) {
         boolean result = false;
 
         try {
             conn = Common.getConnection();
             pStmt = conn.prepareStatement("UPDATE USER_INFO SET IMG = ? WHERE USER_ID = ?");
             pStmt.setString(1, img);
-            pStmt.setInt(2, userId);
+            pStmt.setString(2, userId);
             pStmt.executeUpdate();
             result = true;
 
@@ -368,14 +372,14 @@ public class UserInfoDAO {
     }
 
     // 자기소개 업로드
-    public boolean uploadIntro(int userId, String intro) {
+    public boolean uploadIntro(String userId, String intro) {
         boolean result = false;
 
         try {
             conn = Common.getConnection();
             pStmt = conn.prepareStatement("UPDATE USER_INFO SET Intro = ? WHERE USER_ID = ?");
             pStmt.setString(1, intro);
-            pStmt.setInt(2, userId);
+            pStmt.setString(2, userId);
             pStmt.executeUpdate();
             result = true;
 
