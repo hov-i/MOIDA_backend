@@ -12,6 +12,7 @@ import java.sql.Date;
 public class StudyVO {
     private int studyId;
     private int studyMgrId;
+    private String userImg;
     private String studyName;
     private String studyCategory;
     private int studyUserLimit;

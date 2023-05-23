@@ -208,11 +208,10 @@ public class StudyDAO {
 
     public List<StudyVO> getStudyMem(int studyid) {
         List<StudyVO> memList = new ArrayList<>();
-        StudyVO vo = new StudyVO();
         try {
             conn = Common.getConnection();
             StringBuilder sql = new StringBuilder();
-            sql.append("SELECT UI.USER_ID, SI.STUDY_MGR_ID, UI.NICKNAME, UI.INTRO ");
+            sql.append("SELECT SI.STUDY_MGR_ID, UI.USER_ID, UI.NICKNAME, UI.INTRO, UI.IMG ");
             sql.append("FROM USER_INFO UI ");
             sql.append("JOIN STUDY_USER SU ON UI.USER_ID = SU.USER_ID ");
             sql.append("JOIN STUDY_INFO SI ON SU.STUDY_ID = SI.STUDY_ID ");
@@ -223,17 +222,29 @@ public class StudyDAO {
             rs = pstmt.executeQuery();
             int num = 0;
             while (rs.next()) {
+                StudyVO vo = new StudyVO();
                 vo.setStudyId(studyid);
                 vo.setStudyMgrId(rs.getInt("STUDY_MGR_ID"));
+                System.out.println(rs.getInt("STUDY_MGR_ID"));
                 vo.setUserId(rs.getInt("USER_ID"));
+                System.out.println(rs.getInt("USER_ID"));
                 vo.setUserName(rs.getString("NICKNAME"));
+                System.out.println(rs.getString("NICKNAME"));
                 vo.setUserIntro(rs.getString("INTRO"));
+                System.out.println(rs.getString("INTRO"));
+                vo.setUserImg(rs.getString("IMG"));
+                System.out.println(rs.getString("INTRO"));
                 memList.add(vo);
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
+
+        } finally {
+            Common.close(rs);
+            Common.close(pstmt);
+            Common.close(conn);
+    }
         return memList;
     }
     public boolean StudyMemOk(int studyid, int userId) {
@@ -407,6 +418,49 @@ public class StudyDAO {
 
             result = pstmt.executeUpdate();
             System.out.println("STUDY_USER DB 추가 결과 확인 : " + result);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+        if(result == 1) return true;
+        else return false;
+    }
+
+    public boolean studyJoinMemUpdate (int studyId) {
+        int result = 0;
+        String sql = "UPDATE STUDY_INFO SET STUDY_USER_COUNT = STUDY_USER_COUNT+1 WHERE STUDY_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, studyId);
+
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY_INFO MemCnt+ DB 추가 결과 확인 : " + result);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+        if(result == 1) return true;
+        else return false;
+    }
+    public boolean studyJoinMemDisCount (int studyId) {
+        int result = 0;
+        String sql = "UPDATE STUDY_INFO SET STUDY_USER_COUNT = STUDY_USER_COUNT-1 WHERE STUDY_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, studyId);
+
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY_INFO MemCnt- DB 추가 결과 확인 : " + result);
 
 
         } catch (Exception e) {

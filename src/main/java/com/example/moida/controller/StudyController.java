@@ -47,6 +47,7 @@ public class StudyController {
         StudyDAO dao = new StudyDAO();
         StudyVO studyInfo = dao.getStudyById(studyId);
         return new ResponseEntity<>(studyInfo, HttpStatus.OK);
+
     }
 
     // 스터디룸 멤버 리스트
@@ -55,7 +56,6 @@ public class StudyController {
         System.out.println("Study Id : " + studyId);
         StudyDAO dao = new StudyDAO();
         List<StudyVO> list = dao.getStudyMem(studyId);
-        System.out.println(list.toString());
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -271,12 +271,14 @@ public class StudyController {
 
         StudyDAO dao = new StudyDAO();
         boolean isTrue = dao.studyJoinInsert(studyId, userId);
-        if (isTrue) System.out.println(HttpStatus.OK);
+        boolean isMemTrue = dao.studyJoinMemUpdate(studyId);
+        if (isTrue && isMemTrue) System.out.println(HttpStatus.OK);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
+
     // 스터디 나가기
-    @DeleteMapping("/study/studyRoom/Main/studyOut")
+    @PostMapping("/study/studyRoom/Main/studyOut")
     public ResponseEntity<Boolean> studyOut(@RequestBody Map<String, String> regData) throws ParseException {
         String getStudyId = regData.get("studyId");
         int studyId = Integer.parseInt(getStudyId);
@@ -288,7 +290,8 @@ public class StudyController {
 
         StudyDAO dao = new StudyDAO();
         boolean isTrue = dao.studyOut(studyId, userId);
-        if (isTrue) System.out.println(HttpStatus.OK);
+        boolean isMemTrue = dao.studyJoinMemDisCount(studyId);
+        if (isTrue&&isMemTrue) System.out.println(HttpStatus.OK);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
