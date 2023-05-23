@@ -1,21 +1,19 @@
 package com.example.moida.controller;
 
-import com.example.moida.dao.MailDAO;
 import com.example.moida.dao.UserInfoDAO;
 import com.example.moida.vo.UserInfoVO;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 
 public class UserController {
+
     //회원가입
     @PostMapping("/new")
     public ResponseEntity<Boolean> memberRegister(@RequestBody Map<String, String> regData) {
@@ -35,6 +33,20 @@ public class UserController {
         boolean isTrue = dao.memberRegister(userName, pw, pwConfirm, email, phone, nickname);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
+
+    // 아이디, 닉네임 중복 확인
+//    @PostMapping("/checkUsername")
+//    public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
+//        boolean isDuplicate = userInfoDAO.checkUsername(username);
+//        return new ResponseEntity<>(isDuplicate, HttpStatus.OK);
+//    }
+//
+//    @PostMapping("/checkNickname")
+//    public ResponseEntity<Boolean> checkNickname(@PathVariable String nickname) {
+//        boolean isDuplicate = userInfoDAO.checkNickname(nickname);
+//        return new ResponseEntity<>(isDuplicate, HttpStatus.OK);
+//    }
+
 
     //로그인
     @PostMapping("/login")

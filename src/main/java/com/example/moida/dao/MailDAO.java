@@ -45,11 +45,11 @@ public class MailDAO {
         String html = null;
         switch (type) {
             case "findPw":
-                html = "<p>새로운 비밀번호는 <strong>" + code + "</strong>입니다.</p>";
+                html = "<p>새로운 비밀번호는 '<strong>" + code + "</strong>'입니다.</p>";
                 break;
 
             case "findId":
-                html = "<p>가입하신 아이디는<strong>" + phone + "</strong>입니다.</p>";
+                html = "<p>가입하신 아이디는 '<strong>" + phone + "</strong>'입니다.</p>";
                 break;//이유는 모르겠는데 phone 값을 username으로 설정하니 오류 남 일단 phone은 username임
         }
         return html;

@@ -80,6 +80,19 @@ public class UserInfoDAO {
         return isNotReg; // 가입 되어 있으면 false, 가입이 안되어 있으면 true
     }
 
+    // 아이디, 닉네임 중복 검사
+    public boolean checkUsername(String userName) {
+        String query = "SELECT COUNT(*) FROM USER_INFO WHERE USERNAME = ?";
+        int count = jdbcTemplate.queryForObject(query, new Object[]{userName}, Integer.class);
+        return count > 0;
+    }
+
+    public boolean checkNickname(String nickname) {
+        String query = "SELECT COUNT(*) FROM USER_INFO WHERE NICKNAME = ?";
+        int count = jdbcTemplate.queryForObject(query, new Object[]{nickname}, Integer.class);
+        return count > 0;
+    }
+
 
     // 정보 받아오기
     public UserInfoVO getUserInfo(String userName) {
