@@ -31,12 +31,12 @@ public class StudyController {
     }
 
     // 내가 작성한 스터디 리스트
-    @GetMapping("/mypage/sL/{userId}")
-    public ResponseEntity<StudyVO> viewMyCreateStudy(@PathVariable int userId) {
-        System.out.println("userId Id : " + userId);
+    @GetMapping("/study/myPage/myCreateStudy/{userId}")
+    public ResponseEntity<List<StudyVO>> viewMyCreateStudy(@PathVariable int userId) {
+        System.out.println("내가 작성한 스터디 리스트 id : " + userId);
         StudyDAO dao = new StudyDAO();
-        StudyVO studyInfo = dao.getMyCreateStudy(userId);
-        return new ResponseEntity<>(studyInfo, HttpStatus.OK);
+        List<StudyVO> studyMyInfo = dao.getMyCreateStudy(userId);
+        return new ResponseEntity<>(studyMyInfo, HttpStatus.OK);
     }
 
 
@@ -290,6 +290,24 @@ public class StudyController {
 
         StudyDAO dao = new StudyDAO();
         boolean isTrue = dao.studyOut(studyId, userId);
+        boolean isMemTrue = dao.studyJoinMemDisCount(studyId);
+        if (isTrue&&isMemTrue) System.out.println(HttpStatus.OK);
+        return new ResponseEntity<>(isTrue, HttpStatus.OK);
+    }
+
+    // 스터디 삭제
+    @PostMapping("/mypage/studyDelete/{studyId}/{userId}")
+    public ResponseEntity<Boolean> studyDrop(@RequestBody Map<String, String> regData) throws ParseException {
+        String getStudyId = regData.get("studyId");
+        int studyId = Integer.parseInt(getStudyId);
+
+        String getUserId = regData.get("userId");
+        int userId = Integer.parseInt(getUserId);
+        System.out.println("StudyID : " + studyId);
+        System.out.println("userId : " + userId);
+
+        StudyDAO dao = new StudyDAO();
+        boolean isTrue = dao.studyDrop(studyId, userId);
         boolean isMemTrue = dao.studyJoinMemDisCount(studyId);
         if (isTrue&&isMemTrue) System.out.println(HttpStatus.OK);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);

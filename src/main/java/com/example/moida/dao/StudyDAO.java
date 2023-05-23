@@ -118,9 +118,9 @@ public class StudyDAO {
         return studyList;
     }
 
-    public StudyVO getMyCreateStudy(int userId) {
+    public List<StudyVO> getMyCreateStudy(int userId) {
 
-        StudyVO vo = new StudyVO();
+        List<StudyVO> studyList = new ArrayList<>();
 
         try {
             conn = Common.getConnection();
@@ -135,31 +135,44 @@ public class StudyDAO {
             pstmt.setInt(1, userId);
             rs = pstmt.executeQuery();
             int num = 0;
-            while (rs.next()) {
-                if (num == 1) vo.setTagName(vo.getTagName() + " #" + rs.getString("TAG_NAME"));
-                else {
-                    vo.setStudyId(userId);
-                    vo.setStudyMgrId(rs.getInt("STUDY_MGR_ID"));
-                    vo.setStudyName(rs.getString("STUDY_NAME"));
-                    vo.setStudyCategory(rs.getString("STUDY_CATEGORY"));
-                    vo.setStudyUserLimit(rs.getInt("STUDY_USER_LIMIT"));
-                    vo.setStudyUserCount(rs.getInt("STUDY_USER_COUNT"));
-                    vo.setStudyDeadline(rs.getDate("STUDY_DEADLINE"));
-                    vo.setStudyChatUrl(rs.getString("STUDY_CHAT_URL"));
-                    vo.setStudyIntro(rs.getString("STUDY_INTRO"));
-                    vo.setStudyContent(rs.getString("STUDY_CONTENT"));
-                    vo.setUserName(rs.getString("NICKNAME"));
-                    vo.setStudyProfile(rs.getString("STUDY_PROFILE"));
-                    vo.setTagName("#" + rs.getString("TAG_NAME"));
+            try  {
+
+                int prevStudyId = -1;
+                StudyVO study = null;
+
+                while (rs.next()) {
+                    int nowStudyId = rs.getInt("STUDY_ID");
+                    if (prevStudyId != nowStudyId) {
+                        if (study != null) studyList.add(study);
+                        study = new StudyVO();
+                        study.setStudyId(nowStudyId);
+                        study.setStudyMgrId(rs.getInt("STUDY_MGR_ID"));
+                        study.setStudyName(rs.getString("STUDY_NAME"));
+                        study.setStudyCategory(rs.getString("STUDY_CATEGORY"));
+                        study.setStudyUserLimit(rs.getInt("STUDY_USER_LIMIT"));
+                        study.setStudyUserCount(rs.getInt("STUDY_USER_COUNT"));
+                        study.setStudyDeadline(rs.getDate("STUDY_DEADLINE"));
+                        study.setStudyChatUrl(rs.getString("STUDY_CHAT_URL"));
+                        study.setStudyIntro(rs.getString("STUDY_INTRO"));
+                        study.setStudyContent(rs.getString("STUDY_CONTENT"));
+                        study.setUserName(rs.getString("NICKNAME"));
+                        study.setStudyProfile(rs.getString("STUDY_PROFILE"));
+                        study.setTagName("#" + rs.getString("TAG_NAME"));
+
+                        prevStudyId = nowStudyId;
+                    } else {
+                        study.setTagName(study.getTagName() + " #" + rs.getString("TAG_NAME"));
+                    }
                 }
-                num = 1;
-
+                studyList.add(study);
+                System.out.println(studyList);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-        return vo;
+        return studyList;
     }
 
     public StudyVO getStudyById(int studyId) {
@@ -482,6 +495,27 @@ public class StudyDAO {
 
             result = pstmt.executeUpdate();
             System.out.println("STUDY_USER DB 삭제 결과 확인 : " + result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pstmt);
+        Common.close(conn);
+        if(result == 1) return true;
+        else return false;
+    }
+
+    public boolean studyDrop (int studyId, int userId) {
+        int result = 0;
+        String sql = "DELETE FROM STUDY_INFO WHERE STUDY_ID = ? AND STUDY_MGR_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, studyId);
+            pstmt.setInt(2, userId);
+
+            result = pstmt.executeUpdate();
+            System.out.println("STUDY DB 삭제 결과 확인 : " + result);
 
         } catch (Exception e) {
             e.printStackTrace();
