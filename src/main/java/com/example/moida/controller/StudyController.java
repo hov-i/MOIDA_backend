@@ -1,5 +1,6 @@
 package com.example.moida.controller;
 
+//import com.example.moida.dao.BoardDAO;
 import com.example.moida.dao.PostDAO;
 import com.example.moida.dao.ScheduleDAO;
 import com.example.moida.dao.StudyDAO;
@@ -27,6 +28,15 @@ public class StudyController {
         StudyDAO dao = new StudyDAO();
         List<StudyVO> list = dao.studySelect();
         return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    // 내가 작성한 스터디 리스트
+    @GetMapping("/mypage/sL/{userId}")
+    public ResponseEntity<StudyVO> viewMyCreateStudy(@PathVariable int userId) {
+        System.out.println("userId Id : " + userId);
+        StudyDAO dao = new StudyDAO();
+        StudyVO studyInfo = dao.getMyCreateStudy(userId);
+        return new ResponseEntity<>(studyInfo, HttpStatus.OK);
     }
 
 
@@ -58,6 +68,25 @@ public class StudyController {
         System.out.println(isOk);
         return new ResponseEntity<>(isOk, HttpStatus.OK);
     }
+
+    // 스터디룸 보드 작성
+//    @PostMapping("/study/studyRoom/Schedule/{studyId}")
+//    public ResponseEntity<Boolean> boardWrite(@RequestBody Map<String, String> regData) throws ParseException {
+//        String getStudyId = regData.get("studyId");
+//        int studyId = Integer.parseInt(getStudyId);
+//
+//        String getuserId = regData.get("userId");
+//        int userId = Integer.parseInt(getuserId);
+//
+//        String getBoardTitle = regData.get("boardTitle");
+//        String getBoardContent = regData.get("boardContent");
+//
+//
+//        BoardDAO dao = new BoardDAO();
+//        boolean isTrue = dao.boardInsert(studyId, userId, getBoardTitle, getBoardContent);
+//        if (isTrue) System.out.println(HttpStatus.OK);
+//        return new ResponseEntity<>(isTrue, HttpStatus.OK);
+//    }
 
     // 스터디룸 일정 참가 OK
     @GetMapping("/study/studyRoom/scIsOk/{studyScId}/{userId}")

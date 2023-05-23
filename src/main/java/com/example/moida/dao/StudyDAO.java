@@ -67,7 +67,7 @@ public class StudyDAO {
         try {
             conn = Common.getConnection();
             StringBuilder sql = new StringBuilder();
-            sql.append("SELECT DISTINCT S.STUDY_ID, S.STUDY_CATEGORY, UI.USERNAME, SU.USER_ID, S.STUDY_USER_LIMIT, S.STUDY_DEADLINE, S.STUDY_USER_COUNT, S.STUDY_NAME, S.STUDY_INTRO, S.STUDY_PROFILE, T.TAG_NAME ");
+            sql.append("SELECT S.STUDY_ID, S.STUDY_CATEGORY, UI.USERNAME, SU.USER_ID, S.STUDY_USER_LIMIT, S.STUDY_DEADLINE, S.STUDY_USER_COUNT, S.STUDY_NAME, S.STUDY_INTRO, S.STUDY_PROFILE, T.TAG_NAME ");
             sql.append("FROM STUDY_INFO S ");
             sql.append("JOIN STUDY_TAG_REL STR ON S.STUDY_ID = STR.STUDY_ID ");
             sql.append("JOIN TAGS T ON STR.TAG_ID = T.TAG_ID ");
@@ -118,7 +118,49 @@ public class StudyDAO {
         return studyList;
     }
 
+    public StudyVO getMyCreateStudy(int userId) {
 
+        StudyVO vo = new StudyVO();
+
+        try {
+            conn = Common.getConnection();
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT S.*, T.TAG_NAME, UI.NICKNAME FROM STUDY_INFO S ");
+            sql.append("JOIN STUDY_TAG_REL STR ON S.STUDY_ID = STR.STUDY_ID ");
+            sql.append("JOIN TAGS T ON STR.TAG_ID = T.TAG_ID ");
+            sql.append("JOIN USER_INFO UI ON S.STUDY_MGR_ID = UI.USER_ID ");
+            sql.append("WHERE S.STUDY_MGR_ID = ? ");
+
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setInt(1, userId);
+            rs = pstmt.executeQuery();
+            int num = 0;
+            while (rs.next()) {
+                if (num == 1) vo.setTagName(vo.getTagName() + " #" + rs.getString("TAG_NAME"));
+                else {
+                    vo.setStudyId(userId);
+                    vo.setStudyMgrId(rs.getInt("STUDY_MGR_ID"));
+                    vo.setStudyName(rs.getString("STUDY_NAME"));
+                    vo.setStudyCategory(rs.getString("STUDY_CATEGORY"));
+                    vo.setStudyUserLimit(rs.getInt("STUDY_USER_LIMIT"));
+                    vo.setStudyUserCount(rs.getInt("STUDY_USER_COUNT"));
+                    vo.setStudyDeadline(rs.getDate("STUDY_DEADLINE"));
+                    vo.setStudyChatUrl(rs.getString("STUDY_CHAT_URL"));
+                    vo.setStudyIntro(rs.getString("STUDY_INTRO"));
+                    vo.setStudyContent(rs.getString("STUDY_CONTENT"));
+                    vo.setUserName(rs.getString("NICKNAME"));
+                    vo.setStudyProfile(rs.getString("STUDY_PROFILE"));
+                    vo.setTagName("#" + rs.getString("TAG_NAME"));
+                }
+                num = 1;
+
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return vo;
+    }
 
     public StudyVO getStudyById(int studyId) {
 
