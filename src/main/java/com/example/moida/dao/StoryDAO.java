@@ -20,7 +20,7 @@ public class StoryDAO {
     private Statement stmt = null;
 
 
-    // 스토리 메인 - 전체 리스트
+    // 스토리 메인  - 전체 리스트 초기 게시물 132개
     public List<StoryVO> StoryVOList() {
         List<StoryVO> list = new ArrayList<>();
         try {
@@ -28,10 +28,54 @@ public class StoryDAO {
             conn = Common.getConnection();
             StringBuilder sql = new StringBuilder();
 
-            sql.append("SELECT ST.STORY_IMG, S.STORY_NAME, SI.STUDY_NAME ");
+            sql.append("SELECT S.IMG_URL, S.TITLE, SI.STUDY_NAME ");
             sql.append("FROM STORY S ");
-            sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID");
+            sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID ");
 
+            pStmt = conn.prepareStatement(sql.toString());
+            rs = pStmt.executeQuery();
+
+            while (rs.next()) {
+                int storyId = rs.getInt("STORY_ID");
+                String imgUrl = rs.getString("IMG_URL");
+                String title  = rs.getString("TITLE");
+                String studyName = rs.getString("STUDY_NAME");
+
+                StoryVO vo = new StoryVO();
+
+                vo.setStoryId(storyId);
+                vo.setImgUrl(imgUrl);
+                vo.setTitle(title);
+                vo.setStudyName(studyName);
+
+                list.add(vo);
+            }
+            Common.close(rs);
+            Common.close(pStmt);
+            Common.close(conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } return list;
+    }
+
+    // LastID 이전 게시물 120개
+    public List<StoryVO> StoryVOList(int lastId) {
+        List<StoryVO> list = new ArrayList<>();
+
+        try {
+            conn = Common.getConnection();
+            StringBuilder sql = new StringBuilder();
+
+            sql.append("SELECT * FROM ( SELECT T.*, ROWNUM AS RN FROM ( ");
+            sql.append("SELECT S.*, S.IMG_URL, S.STORY_NAME, SI.STUDY_NAME ");
+            sql.append("FROM STORY S");
+            sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID ");
+            sql.append("WHERE STORY_ID < ? ");
+            sql.append("ORDER BY STORY_ID DESC) T ) WHERE RN BETWEEN 0 AND 120 ");
+
+
+            pStmt = conn.prepareStatement(sql.toString());
+            pStmt.setInt(1, lastId);
             rs = pStmt.executeQuery();
 
             while (rs.next()) {
@@ -78,11 +122,8 @@ public class StoryDAO {
             pStmt.setInt(1, storyId);
             rs = pStmt.executeQuery();
 
-            int num = 0;
-            while (rs.next()) {
-                if (num == 1) vo.setStudyTag(vo.getStudyTag() + " #" + rs.getString("TAG_NAME"));
 
-                else {
+            while (rs.next()) {
                     vo.setStoryId(storyId);
                     vo.setTitle(rs.getString("TITLE"));
                     vo.setUserId(rs.getInt("USER_ID"));
@@ -99,9 +140,7 @@ public class StoryDAO {
 
                     vo.setImgUrl(rs.getString("IMG_URL"));
                     vo.setContents(rs.getString("CONTENTS"));
-                }
             }
-            num = 1;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

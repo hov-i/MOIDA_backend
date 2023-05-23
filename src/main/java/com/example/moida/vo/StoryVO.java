@@ -28,7 +28,6 @@ public class StoryVO {
     private int studyId; // join 으로 사용할 예정
     private String studyProfile; // join 으로 사용할 예정
     private String studyIntro; // join 으로 사용할 예정
-    private String studyTag; // join 으로 사용할 예정
     private String contents;
     private List<StoryCommentVO> comments; // join 으로 사용할 예정
 
