@@ -130,13 +130,13 @@ public class StudyDAO {
             sql.append("JOIN TAGS T ON STR.TAG_ID = T.TAG_ID ");
             sql.append("JOIN USER_INFO UI ON S.STUDY_MGR_ID = UI.USER_ID ");
             sql.append("WHERE S.STUDY_MGR_ID = ? ");
+            sql.append("ORDER BY S.STUDY_ID DESC");
 
             pstmt = conn.prepareStatement(sql.toString());
             pstmt.setInt(1, userId);
             rs = pstmt.executeQuery();
             int num = 0;
             try  {
-
                 int prevStudyId = -1;
                 StudyVO study = null;
 
@@ -171,7 +171,11 @@ public class StudyDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }  finally {
+        Common.close(rs);
+        Common.close(pstmt);
+        Common.close(conn);
+    }
         return studyList;
     }
 
