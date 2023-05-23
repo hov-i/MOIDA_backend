@@ -177,6 +177,54 @@ public class CommentDAO {
     }
 
 
+    public List<CommentVO> getCommentsByStoryId(int storyId) {
+        List<CommentVO> list = new ArrayList<>();
+
+        try {
+            conn = Common.getConnection();
+            StringBuilder sql = new StringBuilder();
+
+            sql.append("SELECT S.*, U.NICKNAME, U.IMG AS USER_IMG_URL FROM STORY_COMMENT S ");
+            sql.append("INNER JOIN USER_INFO U ");
+            sql.append("ON S.USER_ID = U.USER_ID WHERE STORY_ID = ? ");
+            sql.append("START WITH PARENT_COMMENT_ID IS NULL ");
+            sql.append("CONNECT BY PRIOR STORY_COMMENT_ID = PARENT_COMMENT_ID ");
+
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setString(1, String.valueOf(storyId));
+            rSet = pstmt.executeQuery();
+
+            while (rSet.next()) {
+                int commentId = rSet.getInt("STORY_COMMENT_ID");
+                int userId = rSet.getInt("USER_ID");
+                int parentId = rSet.getInt("PARENT_COMMENT_ID");
+                String nickname = rSet.getString("NICKNAME");
+                String imgUrl = rSet.getString("USER_IMG_URL");
+                String regTime = rSet.getString("REG_TIME");
+                String contents = rSet.getString("CONTENTS");
+
+                CommentVO vo = new CommentVO();
+                vo.setCommentId(commentId);
+                vo.setUserId(userId);
+                vo.setParentId(parentId);
+                vo.setPostId(storyId);
+                vo.setNickname(nickname);
+                vo.setImgUrl(imgUrl);
+                vo.setRegTime(regTime);
+                vo.setContents(contents);
+
+                list.add(vo);
+            }
+            Common.close(rSet);
+            Common.close(pstmt);
+            Common.close(conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
     // 스토리 댓글 추가
     public boolean storyCommentInsert(int userId, int storyId, String contents) {
         int result = 0;

@@ -3,6 +3,7 @@ package com.example.moida.controller;
 import com.example.moida.dao.*;
 
 import com.example.moida.vo.CommentVO;
+import com.example.moida.vo.PostVO;
 import com.example.moida.vo.StoryVO;
 import com.example.moida.vo.StudyVO;
 
@@ -21,12 +22,30 @@ public class StoryController {
 
     // Story 전체 리스트 조회
     @GetMapping("/story")
-    public ResponseEntity<List<StoryVO>> storylist() {
-        StoryDAO dao = new StoryDAO();
-        List<StoryVO> list = dao.StoryVOList();
+    public ResponseEntity<List<StoryVO>> storylist(@RequestParam(value = "lastId", required = false) Integer lastId) {
+        StoryDAO storyDAO = new StoryDAO();
+        List<StoryVO> list;
+        if (lastId == null) { // lastId가 없는 처음 데이터에는 132개 그 다음 데이터는 lastId값 기준으로 120개씩 보내기
+            list = storyDAO.StoryVOList();
+        } else {
+            list = storyDAO.StoryVOList(lastId);
+        }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
+//    @GetMapping("/story/{storyId}")
+//    public ResponseEntity<StoryVO> viewStory(@PathVariable int storyId) {
+//        System.out.println("Story Id : " + storyId);
+//        StoryDAO storyDAO = new StoryDAO();
+//        CommentDAO commentDAO = new CommentDAO();
+//        StoryVO story = storyDAO.getStoryById(storyId);
+//        List<CommentVO> comments = commentDAO.getCommentsByStoryId(storyId);
+//
+//        story.setComments(comments);
+//            return ResponseEntity.notFound().build();
+//        }
+//        return new ResponseEntity<>(story, HttpStatus.OK);
+//    }
 
     // Story{userId} 게시글
     @GetMapping("/story/{storyId}")
