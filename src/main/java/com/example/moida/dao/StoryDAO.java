@@ -24,16 +24,14 @@ public class StoryDAO {
     public List<StoryVO> StoryVOList() {
         List<StoryVO> list = new ArrayList<>();
         try {
+                conn = Common.getConnection();
+                stmt = conn.createStatement();
 
-            conn = Common.getConnection();
-            StringBuilder sql = new StringBuilder();
+            String sql = "SELECT S.IMG_URL, S.TITLE, SI.STUDY_NAME " +
+                         "FROM STORY S " +
+                         "JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID ";
 
-            sql.append("SELECT S.IMG_URL, S.TITLE, SI.STUDY_NAME ");
-            sql.append("FROM STORY S ");
-            sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID ");
-
-            pStmt = conn.prepareStatement(sql.toString());
-            rs = pStmt.executeQuery();
+            rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
 //                int storyId = rs.getInt("STORY_ID");
