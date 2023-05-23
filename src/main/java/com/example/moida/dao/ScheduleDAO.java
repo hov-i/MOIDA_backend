@@ -205,7 +205,6 @@ public class ScheduleDAO {
             throw new RuntimeException(e);
         }
         return scList;
-
-
     }
+
 }

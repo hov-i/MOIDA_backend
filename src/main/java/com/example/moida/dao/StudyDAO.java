@@ -60,6 +60,65 @@ public class StudyDAO {
     }
 
 
+    public List<StudyVO> myStudySelect(int userId) {
+
+        List<StudyVO> studyList = new ArrayList<>();
+
+        try {
+            conn = Common.getConnection();
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT DISTINCT S.STUDY_ID, S.STUDY_CATEGORY, UI.USERNAME, SU.USER_ID, S.STUDY_USER_LIMIT, S.STUDY_DEADLINE, S.STUDY_USER_COUNT, S.STUDY_NAME, S.STUDY_INTRO, S.STUDY_PROFILE, T.TAG_NAME ");
+            sql.append("FROM STUDY_INFO S ");
+            sql.append("JOIN STUDY_TAG_REL STR ON S.STUDY_ID = STR.STUDY_ID ");
+            sql.append("JOIN TAGS T ON STR.TAG_ID = T.TAG_ID ");
+            sql.append("JOIN STUDY_USER SU ON S.STUDY_ID = SU.STUDY_ID ");
+            sql.append("JOIN USER_INFO UI ON SU.USER_ID = UI.USER_ID ");
+            sql.append("WHERE SU.USER_ID  = ? ");
+            sql.append("ORDER BY STUDY_ID DESC");
+
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setInt(1, userId);
+            rs = pstmt.executeQuery();
+            int num = 0;
+            try  {
+
+                int prevStudyId = -1;
+                StudyVO study = null;
+
+                while (rs.next()) {
+                    int nowStudyId = rs.getInt("STUDY_ID");
+                    if (prevStudyId != nowStudyId) {
+                        if (study != null) studyList.add(study);
+                        study = new StudyVO();
+                        study.setStudyId(nowStudyId);
+                        study.setStudyCategory(rs.getString("STUDY_CATEGORY"));
+                        study.setUserName(rs.getString("USERNAME"));
+                        study.setUserId(rs.getInt("USER_ID"));
+                        study.setStudyUserLimit(rs.getInt("STUDY_USER_LIMIT"));
+                        study.setStudyDeadline(rs.getDate("STUDY_DEADLINE"));
+                        study.setStudyUserCount(rs.getInt("STUDY_USER_COUNT"));
+                        study.setStudyName(rs.getString("STUDY_NAME"));
+                        study.setStudyIntro(rs.getString("STUDY_INTRO"));
+                        study.setStudyProfile(rs.getString("STUDY_PROFILE"));
+                        study.setTagName("#" + rs.getString("TAG_NAME"));
+
+                        prevStudyId = nowStudyId;
+                    } else {
+                        study.setTagName(study.getTagName() + " #" + rs.getString("TAG_NAME"));
+                    }
+                }
+                studyList.add(study);
+                System.out.println(studyList);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return studyList;
+    }
+
+
 
     public StudyVO getStudyById(int studyId) {
 
@@ -130,11 +189,52 @@ public class StudyDAO {
                 memList.add(vo);
             }
 
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return memList;
+    }
+    public boolean StudyMemOk(int studyid, int userId) {
+        List<StudyVO> memList = new ArrayList<>();
+        StudyVO vo = new StudyVO();
+        try {
+            conn = Common.getConnection();
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT STUDY_ID, USER_ID FROM STUDY_USER ");
+            sql.append("WHERE STUDY_ID = ? AND USER_ID = ? ");
+
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setInt(1, studyid);
+            pstmt.setInt(2, userId);
+            rs = pstmt.executeQuery();
+            int num = 0;
+            if(rs.next()) return true;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    public boolean StudyScisOk(int studyScid, int userId) {
+        List<StudyVO> memList = new ArrayList<>();
+        StudyVO vo = new StudyVO();
+        try {
+            conn = Common.getConnection();
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT * FROM STUDY_SC_MEMBER SSM  ");
+            sql.append("JOIN USER_INFO UI ON UI.USER_ID = SSM.USER_ID ");
+            sql.append("WHERE UI.USER_ID = ? AND SSM.STUDY_SC_ID = ? ");
+
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, studyScid);
+            rs = pstmt.executeQuery();
+            int num = 0;
+            if(rs.next()) return true;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 
 

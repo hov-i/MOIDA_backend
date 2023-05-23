@@ -45,7 +45,28 @@ public class StudyController {
         System.out.println("Study Id : " + studyId);
         StudyDAO dao = new StudyDAO();
         List<StudyVO> list = dao.getStudyMem(studyId);
+        System.out.println(list.toString());
         return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    // 스터디룸 멤버 OK
+    @GetMapping("/study/studyRoom/memIsOk/{studyId}/{userId}")
+    public ResponseEntity<Boolean> StudyMemisOk(@PathVariable int studyId, @PathVariable int userId) {
+        System.out.println("Study Id : " + studyId);
+        StudyDAO dao = new StudyDAO();
+        boolean isOk = dao.StudyMemOk(studyId, userId);
+        System.out.println(isOk);
+        return new ResponseEntity<>(isOk, HttpStatus.OK);
+    }
+
+    // 스터디룸 일정 참가 OK
+    @GetMapping("/study/studyRoom/scIsOk/{studyScId}/{userId}")
+    public ResponseEntity<Boolean> StudyScisOk(@PathVariable int studyScId, @PathVariable int userId) {
+        System.out.println("Study Id : " + studyScId);
+        StudyDAO dao = new StudyDAO();
+        boolean isOk = dao.StudyScisOk(studyScId, userId);
+        System.out.println(isOk);
+        return new ResponseEntity<>(isOk, HttpStatus.OK);
     }
 
     // 스터디룸 일정 리스트
@@ -65,6 +86,18 @@ public class StudyController {
         List<ScheduleVO> list = dao.getStudyMySc(userId);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
+
+    //스터디 페이지 나의 스터디
+    @GetMapping("/study/myStudyList/{userId}")
+    public ResponseEntity<List<StudyVO>> viewMyStudy(@PathVariable int userId) throws SQLException {
+        System.out.println("UserId : " + userId);
+        StudyDAO dao = new StudyDAO();
+        List<StudyVO> list = dao.myStudySelect(userId);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+
+
 
     //스터디 작성
     @PostMapping("/study/create")
@@ -159,11 +192,11 @@ public class StudyController {
     }
 
     //스터디 일정 삭제
-    @DeleteMapping("/study/studyRoom/Schedule/ScheduleDelete")
+    @DeleteMapping("/study/studyRoom/ScheduleDelete")
     public ResponseEntity<Boolean> scheduleDelete(@RequestBody Map<String, String> regData) throws ParseException {
         String getStudyScId = regData.get("studyScId");
         int studyScId = Integer.parseInt(getStudyScId);
-
+        System.out.println("스터디 일정 삭제");
         ScheduleDAO dao = new ScheduleDAO();
         boolean isTrue = dao.scheduleDelete(studyScId);
         if (isTrue) System.out.println(HttpStatus.OK);
