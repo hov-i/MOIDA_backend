@@ -22,9 +22,14 @@ public class StoryController {
 
     // Story 전체 리스트 조회
     @GetMapping("/story")
-    public ResponseEntity<List<StoryVO>> storylist() {
-        StoryDAO dao = new StoryDAO();
-        List<StoryVO> list = dao.StoryVOList();
+    public ResponseEntity<List<StoryVO>> storylist(@RequestParam(value = "lastId", required = false) Integer lastId) {
+        StoryDAO storyDAO = new StoryDAO();
+        List<StoryVO> list;
+        if (lastId == null) { // lastId가 없는 처음 데이터에는 132개 그 다음 데이터는 lastId값 기준으로 120개씩 보내기
+            list = storyDAO.StoryVOList();
+        } else {
+            list = storyDAO.StoryVOList(lastId);
+        }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 

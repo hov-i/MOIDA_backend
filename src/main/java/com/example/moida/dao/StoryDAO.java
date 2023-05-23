@@ -36,14 +36,14 @@ public class StoryDAO {
             rs = pStmt.executeQuery();
 
             while (rs.next()) {
-                int storyId = rs.getInt("STORY_ID");
+//                int storyId = rs.getInt("STORY_ID");
                 String imgUrl = rs.getString("IMG_URL");
                 String title  = rs.getString("TITLE");
                 String studyName = rs.getString("STUDY_NAME");
 
                 StoryVO vo = new StoryVO();
 
-                vo.setStoryId(storyId);
+//                vo.setStoryId(storyId);
                 vo.setImgUrl(imgUrl);
                 vo.setTitle(title);
                 vo.setStudyName(studyName);
