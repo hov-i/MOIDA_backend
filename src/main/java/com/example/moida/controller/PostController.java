@@ -64,8 +64,9 @@ public class PostController {
         String getTitle = modData.get("title");
         String getContents = modData.get("contents");
         int getPostId = Integer.parseInt(modData.get("postId"));
+        String getImgUrl = modData.get("imgUrl");
         PostDAO dao = new PostDAO();
-        boolean result = dao.postUpdate(getTitle, getContents, getPostId);
+        boolean result = dao.postUpdate(getPostId, getTitle, getContents, getImgUrl);
         if (result) System.out.println(HttpStatus.OK);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -150,9 +151,8 @@ public class PostController {
     }
 
     // comment 삭제
-    @PostMapping("/post/comment/delete")
-    public ResponseEntity<Boolean> commentDelete(@RequestBody Map<String, String> delData) {
-        int commentId = Integer.parseInt(delData.get("commentId"));
+    @PostMapping("/lounge/comment/delete")
+    public ResponseEntity<Boolean> commentDelete (@RequestParam(value="commentId") int commentId) {
         CommentDAO dao = new CommentDAO();
         boolean isTrue = dao.postCommentDelete(commentId);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);

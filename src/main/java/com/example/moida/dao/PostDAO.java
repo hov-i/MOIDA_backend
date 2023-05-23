@@ -209,16 +209,17 @@ public class PostDAO {
     }
 
     // 게시물 수정
-    public boolean postUpdate(String title, String contents, int postId) {
+    public boolean postUpdate(int postId, String title, String contents, String imgUrl) {
         int result = 0;
-        String sql = "UPDATE POST SET TITLE = ? CONTENTS= ? WHERE POST_ID = ? ";
+        String sql = "UPDATE POST SET TITLE = ?, CONTENTS= ?, IMG_URL = ?  WHERE POST_ID = ? ";
         try {
             conn = Common.getConnection();
             pstmt = conn.prepareStatement(sql);
 
             pstmt.setString(1, title);
-            pstmt.setString(3, contents);
-            pstmt.setInt(3, postId);
+            pstmt.setString(2, contents);
+            pstmt.setString(3, imgUrl);
+            pstmt.setInt(4, postId);
 
             result = pstmt.executeUpdate();
             System.out.println("post DB 결과 확인 : " + result);
