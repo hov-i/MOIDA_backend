@@ -20,16 +20,13 @@ public class MailController {
     @ApiOperation(value = "임시 비밀번호 전송 및 변경", notes = "임시 비밀번호를 생성하여 이메일로 전송하고, 사용자의 비밀번호를 변경합니다.", response = Map.class)
     @PostMapping("/findPw")
     public ResponseEntity<Map<String, Object>> changePassword(@RequestBody Map<String, String> map) {
-        System.out.println(map.get("type"));
-        System.out.println(map.get("email"));
-        Map<String, Object> resultMap = new HashMap<>();
-        HttpStatus status = null;
-
-        String tempPw = mailDAO.makeCode(10); // 임시 비밀번호 생성
-
+        String type = map.get("type");
+        String email = map.get("email");
         String username = map.get("username");
         String phone = map.get("phone");
-        String email = map.get("email");
+
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status = null;
 
         // phone, username, email이 모두 일치하는지 확인
         boolean isMatch = mailDAO.checkPhoneUsernameAndEmailMatch(username, phone, email);
@@ -40,63 +37,63 @@ public class MailController {
             return new ResponseEntity<>(resultMap, status);
         }
 
-        boolean isEmailSent = mailDAO.sendMail(map.get("type"), map.get("email"), map.get("phone"));
+        String tempPw = mailDAO.makeCode(10); // 임시 비밀번호 생성
+
+        boolean isEmailSent = mailDAO.sendMail(type, email, tempPw, phone);
         if (isEmailSent) {
             resultMap.put("message", "SUCCESS");
             resultMap.put("tempPw", tempPw);
-        } else {
-            resultMap.put("message", "FAIL");
-        }
 
-        // 사용자의 비밀번호를 임시 비밀번호로 변경
-        boolean isChanged = mailDAO.changePasswordToTemporary(username, tempPw);
-        if (isChanged) {
-            // 비밀번호 변경 성공
-            status = HttpStatus.OK;
+            // 사용자의 비밀번호를 임시 비밀번호로 변경
+            boolean isChanged = mailDAO.changePasswordToTemporary(username, tempPw);
+            if (!isChanged) {
+                resultMap.put("message", "비밀번호 변경에 실패했습니다.");
+                status = HttpStatus.INTERNAL_SERVER_ERROR;
+                return new ResponseEntity<>(resultMap, status);
+            } else {
+                resultMap.put("message", "비밀번호가 성공적으로 변경되었습니다.");
+            }
         } else {
-            // 비밀번호 변경 실패
+            resultMap.put("message", "메일 보내는 데 실패했습니다.");
             status = HttpStatus.INTERNAL_SERVER_ERROR;
+            return new ResponseEntity<>(resultMap, status);
         }
 
+        status = HttpStatus.OK;
         return new ResponseEntity<>(resultMap, status);
     }
 
 
+
+
+
+    @ApiOperation(value = "아이디 찾기", notes = "전달된 이메일과 전화번호로 사용자의 아이디를 찾아 이메일로 전송합니다.", response = Map.class)
     @PostMapping("/findId")
-    public ResponseEntity<Map<String, Object>> findId(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        String phone = request.get("phone");
+    public ResponseEntity<Map<String, Object>> findId(@RequestBody Map<String, String> map) {
+        String email = map.get("email");
+        String phone = map.get("phone");
 
-        // email과 phone이 일치하는지 확인
+        // 이메일과 폰 번호의 일치 여부 확인
         boolean isMatch = mailDAO.checkEmailAndPhoneMatch(email, phone);
-        if (!isMatch) {
-            // email과 phone이 일치하지 않는 경우
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "이메일과 전화번호가 일치하지 않습니다.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-
-        // 아이디 찾기 로직 구현
-        String username = mailDAO.getUsernameByPhone(phone);
-        if (username == null) {
-            // 아이디를 찾을 수 없는 경우
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "아이디를 찾을 수 없습니다.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
-
-        boolean isEmailSent = mailDAO.sendMail("findId", email, phone);
-        if (isEmailSent) {
-            // 이메일 전송 성공
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "아이디를 이메일로 전송하였습니다.");
-            return ResponseEntity.ok(response);
+        if (isMatch) {
+            // 폰 번호로 사용자 아이디 조회
+            String username = mailDAO.getUsernameByPhone(phone);
+            if (username != null) {
+                // 메일 보내기
+                boolean isEmailSent = mailDAO.sendMail("findId", email, null, phone);
+                if (isEmailSent) {
+                    Map<String, Object> resultMap = new HashMap<>();
+                    resultMap.put("message", "SUCCESS");
+                    resultMap.put("username", username);
+                    return new ResponseEntity<>(resultMap, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } else {
-            // 이메일 전송 실패
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "이메일 전송에 실패하였습니다.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
 }

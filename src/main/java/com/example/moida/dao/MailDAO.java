@@ -55,16 +55,14 @@ public class MailDAO {
         return html;
     }
 
-    public boolean sendMail(String type, String email, String phone) {
-        String code = null;
+    public boolean sendMail(String type, String email, String tempPw, String phone) {
         String html = null;
         String subject = null;
         boolean result = false;
 
         switch(type) {
             case "findPw":
-                code = makeCode(10);
-                html = makeHtml(type, code, null);
+                html = makeHtml(type, tempPw, null);
                 subject = "[MOIDA] 새로운 비밀번호가 도착했습니다.";
                 break;
 
@@ -74,8 +72,6 @@ public class MailDAO {
                 subject = "[MOIDA] 아이디 찾기 결과입니다.";
                 break;
         }
-
-
 
         MimeMessage mail = mailSender.createMimeMessage();
         try {
@@ -90,6 +86,7 @@ public class MailDAO {
 
         return result;
     }
+
 
     // 비밀번호 임시 비밀번호로 변경
     @Autowired
