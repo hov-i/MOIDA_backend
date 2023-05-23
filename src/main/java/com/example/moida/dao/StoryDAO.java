@@ -67,7 +67,7 @@ public class StoryDAO {
             StringBuilder sql = new StringBuilder();
 
             sql.append("SELECT * FROM ( SELECT T.*, ROWNUM AS RN FROM ( ");
-            sql.append("SELECT S.*, S.IMG_URL, S.STORY_NAME, SI.STUDY_NAME ");
+            sql.append("SELECT S.*, S.IMG_URL, S.TITLE, SI.STUDY_NAME ");
             sql.append("FROM STORY S");
             sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID ");
             sql.append("WHERE STORY_ID < ? ");
@@ -98,7 +98,9 @@ public class StoryDAO {
             Common.close(conn);
         } catch (Exception e) {
             e.printStackTrace();
-        } return list;
+        }
+        System.out.println("lastId = " + lastId);
+        return list;
     }
 
 
