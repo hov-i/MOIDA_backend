@@ -30,7 +30,7 @@ public class StoryVO {
     private String studyIntro; // join 으로 사용할 예정
     private String studyTag; // join 으로 사용할 예정
     private String contents;
-    private List<CommentVO> comments; // join 으로 사용할 예정
+    private List<StoryCommentVO> comments; // join 으로 사용할 예정
 
 
     // Story 작성 insert VO

@@ -14,70 +14,24 @@ import java.util.List;
 
 @Repository
 public class StoryDAO {
-    Connection conn = null;
-    ResultSet rs = null;
-    PreparedStatement pStmt = null;
-    Statement stmt = null;
+    private Connection conn = null;
+    private ResultSet rs = null;
+    private PreparedStatement pStmt = null;
+    private Statement stmt = null;
 
 
-    // 스토리 메인 - 전체 리스트 초기 게시물 132개
+    // 스토리 메인 - 전체 리스트
     public List<StoryVO> StoryVOList() {
         List<StoryVO> list = new ArrayList<>();
-
         try {
 
             conn = Common.getConnection();
             StringBuilder sql = new StringBuilder();
 
-            sql.append("SELECT S.IMG_URL, S.TITLE, SI.STUDY_NAME ");
-            sql.append("FROM STORY S ");
-            sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID ");
+            sql.append("SELECT ST.STORY_IMG, ST.STORY_NAME, SI.STUDY_NAME ");
+            sql.append("FROM STORY ST ");
+            sql.append("JOIN STUDY_INFO SI ON ST.STUDY_ID = SI.STUDY_ID");
 
-            pStmt = conn.prepareStatement(sql.toString());
-            rs = pStmt.executeQuery();
-
-            while (rs.next()) {
-//                int storyId = rs.getInt("STORY_ID");
-                String imgUrl = rs.getString("IMG_URL");
-                String title  = rs.getString("TITLE");
-                String studyName = rs.getString("STUDY_NAME");
-
-                StoryVO vo = new StoryVO();
-
-//                vo.setStoryId(storyId);
-                vo.setImgUrl(imgUrl);
-                vo.setTitle(title);
-                vo.setStudyName(studyName);
-
-                list.add(vo);
-            }
-            Common.close(rs);
-            Common.close(pStmt);
-            Common.close(conn);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } return list;
-    }
-
-
-    // LastID 이전 게시물 120개
-    public List<StoryVO> StoryVOList(int lastId) {
-        List<StoryVO> list = new ArrayList<>();
-
-        try {
-            conn = Common.getConnection();
-            StringBuilder sql = new StringBuilder();
-
-            sql.append("SELECT * FROM ( SELECT T.*, ROWNUM AS RN FROM ( ");
-            sql.append("SELECT S.*, S.IMG_URL, S.STORY_NAME, SI.STUDY_NAME ");
-            sql.append("FROM STORY S");
-            sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID ");
-            sql.append("WHERE STORY_ID < ? ");
-            sql.append("ORDER BY STORY_ID DESC) T ) WHERE RN BETWEEN 0 AND 120 ");
-
-
-            pStmt = conn.prepareStatement(sql.toString());
-            pStmt.setInt(1, lastId);
             rs = pStmt.executeQuery();
 
             while (rs.next()) {
@@ -104,7 +58,7 @@ public class StoryDAO {
     }
 
 
-    // 스토리 포스트 {storyId}
+    // 스토리 포스트 {storyId} // 조회수
     public StoryVO getStoryById(int storyId) {
         StoryVO vo = new StoryVO();
 
@@ -118,8 +72,6 @@ public class StoryDAO {
         sql.append("JOIN TAGS T ON STR.TAG_ID = T.TAG_ID ");
         sql.append("WHERE STORY_ID = ? ");
 
-        // 조회 수 증가 쿼리문
-//        String sql1 = "UPDATE STORY SET VIEWS = VIEWS + 1 WHERE STORY_ID = ? ";
 
         try {
             conn = Common.getConnection();
@@ -237,7 +189,7 @@ public class StoryDAO {
         else return false;
     }
 
-
+    
     // 스토리 검색 - 필터 리스트
 
 

@@ -3,7 +3,7 @@ package com.example.moida.controller;
 import com.example.moida.dao.*;
 
 import com.example.moida.vo.CommentVO;
-import com.example.moida.vo.PostVO;
+import com.example.moida.vo.StoryCommentVO;
 import com.example.moida.vo.StoryVO;
 import com.example.moida.vo.StudyVO;
 
@@ -22,44 +22,25 @@ public class StoryController {
 
     // Story 전체 리스트 조회
     @GetMapping("/story")
-    public ResponseEntity<List<StoryVO>> storylist(@RequestParam(value = "lastId", required = false) Integer lastId) {
-        StoryDAO storyDAO = new StoryDAO();
-        List<StoryVO> list;
-        if (lastId == null) { // lastId가 없는 처음 데이터에는 132개 그 다음 데이터는 lastId값 기준으로 120개씩 보내기
-            list = storyDAO.StoryVOList();
-        } else {
-            list = storyDAO.StoryVOList(lastId);
-        }
+    public ResponseEntity<List<StoryVO>> storylist() {
+        StoryDAO dao = new StoryDAO();
+        List<StoryVO> list = dao.StoryVOList();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-//    @GetMapping("/story/{storyId}")
-//    public ResponseEntity<StoryVO> viewStory(@PathVariable int storyId) {
-//        System.out.println("Story Id : " + storyId);
-//        StoryDAO storyDAO = new StoryDAO();
-//        CommentDAO commentDAO = new CommentDAO();
-//        StoryVO story = storyDAO.getStoryById(storyId);
-//        List<CommentVO> comments = commentDAO.getCommentsByStoryId(storyId);
-//
-//        story.setComments(comments);
-//            return ResponseEntity.notFound().build();
-//        }
-//        return new ResponseEntity<>(story, HttpStatus.OK);
-//    }
-
     // Story{userId} 게시글
     @GetMapping("/story/{storyId}")
-    public ResponseEntity<StoryVO> StoryList(@PathVariable int studyId, @PathVariable int storyId) {
+    public ResponseEntity<StoryVO> StoryList(@PathVariable int storyId) {
         System.out.println("Story Id : " + storyId);
         StoryDAO storyDAO = new StoryDAO();
-        CommentDAO commentDAO = new CommentDAO();
+        StoryCommentDAO StoryCommentDAO = new StoryCommentDAO();
         StoryVO story = storyDAO.getStoryById(storyId);
-        List<CommentVO> comments = commentDAO.getCommentsByPostId(storyId);
+        List<StoryCommentVO> comments = StoryCommentDAO.getCommentsByStoryId(storyId);
 
-        story.setComments(comments);
-        if (story.getStudyId() < 1 || !(studyId==story.getStudyId())) {
-            return ResponseEntity.notFound().build();
-        }
+//        story.setComments(comments);
+//        if (story.getStudyId() < 1 || !(studyId==story.getStudyId())) {
+//            return ResponseEntity.notFound().build();
+//        }
         return new ResponseEntity<>(story, HttpStatus.OK);
     }
 
@@ -108,7 +89,7 @@ public class StoryController {
         int getStoryId = Integer.parseInt(regData.get("storyId"));
         int getParentId = regData.get("parentId") != null ? Integer.parseInt(regData.get("parentId")) : 0;
         String getContents = regData.get("contents");
-        CommentDAO dao = new CommentDAO();
+        StoryCommentDAO dao = new StoryCommentDAO();
         boolean insertResult;
         if (getParentId < 1) {
             insertResult = dao.storyCommentInsert(getUserId, getStoryId, getContents);
@@ -125,7 +106,7 @@ public class StoryController {
     public ResponseEntity<Boolean> commentModifier(@RequestBody Map<String, String> modData) {
         int getCommentId = Integer.parseInt(modData.get("commentId"));
         String getContents = modData.get("contents");
-        CommentDAO dao = new CommentDAO();
+        StoryCommentDAO dao = new StoryCommentDAO();
         boolean updateResult = dao.storyCommentUpdate(getCommentId, getContents);
         if (updateResult) System.out.println(HttpStatus.OK);
         return new ResponseEntity<>(updateResult, HttpStatus.OK);
@@ -134,9 +115,8 @@ public class StoryController {
 
     // comment 삭제
     @PostMapping("/story/comment/delete")
-    public ResponseEntity<Boolean> commentDelete(@RequestBody Map<String, String> delData) {
-        int commentId = Integer.parseInt(delData.get("commentId"));
-        CommentDAO dao = new CommentDAO();
+    public ResponseEntity<Boolean> commentDelete(@RequestParam(value = "commentId") int commentId) {
+        StoryCommentDAO dao = new StoryCommentDAO();
         boolean isTrue = dao.storyCommentDelete(commentId);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }

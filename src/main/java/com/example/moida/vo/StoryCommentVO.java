@@ -9,14 +9,13 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentVO {
+public class StoryCommentVO {
     private int commentId;
     private int userId;
-    private int postId;
+    private int storyId;
     private int parentId;
     private String nickname;
     private String imgUrl;
     private String regTime;
     private String contents;
-
 }
