@@ -28,9 +28,9 @@ public class StoryDAO {
             conn = Common.getConnection();
             StringBuilder sql = new StringBuilder();
 
-            sql.append("SELECT ST.STORY_IMG, ST.STORY_NAME, SI.STUDY_NAME ");
-            sql.append("FROM STORY ST ");
-            sql.append("JOIN STUDY_INFO SI ON ST.STUDY_ID = SI.STUDY_ID");
+            sql.append("SELECT ST.STORY_IMG, S.STORY_NAME, SI.STUDY_NAME ");
+            sql.append("FROM STORY S ");
+            sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID");
 
             rs = pStmt.executeQuery();
 
@@ -64,12 +64,10 @@ public class StoryDAO {
 
         // 포스트 조회 쿼리문
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT S.*, U.IMG AS USER_IMG_URL, U.NICKNAME, SI.STUDY_PROFILE, SI.STUDY_NAME, SI.STUDY_INTRO, T.TAG_NAME");
+        sql.append("SELECT S.*, U.IMG AS USER_IMG_URL, U.NICKNAME, SI.STUDY_PROFILE, SI.STUDY_NAME, SI.STUDY_INTRO");
         sql.append("FROM STORY S");
         sql.append("INNER JOIN USER_INFO U ON S.USER_ID = U.USER_ID ");
         sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID");
-        sql.append("JOIN STUDY_TAG_REL STR ON SI.STUDY_ID = STR.STUDY_ID");
-        sql.append("JOIN TAGS T ON STR.TAG_ID = T.TAG_ID ");
         sql.append("WHERE STORY_ID = ? ");
 
 
@@ -98,7 +96,6 @@ public class StoryDAO {
                     vo.setStudyProfile(rs.getString("STUDY_PROFILE"));
                     vo.setStudyName(rs.getString("STUDY_NAME"));
                     vo.setStudyIntro(rs.getString("STUDY_INTRO"));
-                    vo.setStudyTag("#" + rs.getString("TAG_NAME"));
 
                     vo.setImgUrl(rs.getString("IMG_URL"));
                     vo.setContents(rs.getString("CONTENTS"));
