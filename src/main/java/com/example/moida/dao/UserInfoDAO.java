@@ -224,15 +224,14 @@ public class UserInfoDAO {
     //MY Page
     // 내 정보 조회
     public UserInfoVO getMyInfo(String userId) {
-        UserInfoVO userInfo = null;
+        UserInfoVO userInfo = new UserInfoVO();
         try {
             conn = Common.getConnection();
-            String sql = "SELECT * FROM USER_INFO WHERE USER_ID = ?";
+            String sql = "SELECT * FROM USER_INFO WHERE USER_ID = ? ";
             pStmt = conn.prepareStatement(sql);
             pStmt.setString(1, userId);
             rs = pStmt.executeQuery();
             if (rs.next()) {
-                userInfo = new UserInfoVO();
                 userInfo.setNickname(rs.getString("NICKNAME"));
                 userInfo.setEmail(rs.getString("EMAIL"));
                 userInfo.setPhone(rs.getString("PHONE"));
