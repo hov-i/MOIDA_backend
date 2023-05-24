@@ -23,7 +23,7 @@ public class StoryVO {
 
     private String userImgUrl; // join 으로 사용할 예정
     private String nickname; // join 으로 사용할 예정
-    private int storyLike;
+//    private int storyLike;
     private String regTime;
     private int studyId; // join 으로 사용할 예정
     private String studyProfile; // join 으로 사용할 예정

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 // import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -35,12 +36,12 @@ public class StoryController {
 
     // Story{userId} 게시글
     @GetMapping("/story/{storyId}")
-    public ResponseEntity<StoryVO> StoryList(@PathVariable int storyId) {
+    public ResponseEntity<StoryVO> viewStory(@PathVariable int storyId) throws SQLException  {
         System.out.println("Story Id : " + storyId);
         StoryDAO storyDAO = new StoryDAO();
-        StoryCommentDAO StoryCommentDAO = new StoryCommentDAO();
+//        StoryCommentDAO StoryCommentDAO = new StoryCommentDAO();
         StoryVO story = storyDAO.getStoryById(storyId);
-        List<StoryCommentVO> comments = StoryCommentDAO.getCommentsByStoryId(storyId);
+//        List<StoryCommentVO> comments = StoryCommentDAO.getCommentsByStoryId(storyId);
 
 //        story.setComments(comments);
 //        if (story.getStudyId() < 1 || !(studyId==story.getStudyId())) {

@@ -27,21 +27,22 @@ public class StoryDAO {
                 conn = Common.getConnection();
                 stmt = conn.createStatement();
 
-            String sql = "SELECT S.IMG_URL, S.TITLE, SI.STUDY_NAME " +
+            String sql = "SELECT S.STORY_ID, S.IMG_URL, S.TITLE, SI.STUDY_NAME " +
                          "FROM STORY S " +
-                         "JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID ";
+                         "JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID " +
+                         "ORDER BY STORY_ID DESC";
 
             rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
-//                int storyId = rs.getInt("STORY_ID");
+                int storyId = rs.getInt("STORY_ID");
                 String imgUrl = rs.getString("IMG_URL");
                 String title  = rs.getString("TITLE");
                 String studyName = rs.getString("STUDY_NAME");
 
                 StoryVO vo = new StoryVO();
 
-//                vo.setStoryId(storyId);
+                vo.setStoryId(storyId);
                 vo.setImgUrl(imgUrl);
                 vo.setTitle(title);
                 vo.setStudyName(studyName);
@@ -104,32 +105,33 @@ public class StoryDAO {
 
     // 스토리 포스트 {storyId} // 조회수
     public StoryVO getStoryById(int storyId) {
-        StoryVO vo = new StoryVO();
 
-        // 포스트 조회 쿼리문
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT S.*, U.IMG AS USER_IMG_URL, U.NICKNAME, SI.STUDY_PROFILE, SI.STUDY_NAME, SI.STUDY_INTRO");
-        sql.append("FROM STORY S");
-        sql.append("INNER JOIN USER_INFO U ON S.USER_ID = U.USER_ID ");
-        sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID");
-        sql.append("WHERE STORY_ID = ? ");
+        StoryVO vo = new StoryVO();
 
 
         try {
             conn = Common.getConnection();
 
+            // 포스트 조회 쿼리문
+            StringBuilder sql = new StringBuilder();
+
+            sql.append("SELECT S.*, U.IMG AS USER_IMG_URL, U.NICKNAME, SI.STUDY_PROFILE, SI.STUDY_NAME, SI.STUDY_INTRO");
+            sql.append("FROM STORY S");
+            sql.append("INNER JOIN USER_INFO U ON S.USER_ID = U.USER_ID ");
+            sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID");
+            sql.append("WHERE STORY_ID = ? ");
+
             pStmt = conn.prepareStatement(sql.toString());
             pStmt.setInt(1, storyId);
             rs = pStmt.executeQuery();
 
-
-            while (rs.next()) {
+            if  (rs.next()) {
                     vo.setStoryId(storyId);
                     vo.setTitle(rs.getString("TITLE"));
                     vo.setUserId(rs.getInt("USER_ID"));
                     vo.setUserImgUrl(rs.getString("USER_IMG_URL"));
                     vo.setNickname(rs.getString("NICKNAME"));
-                    vo.setStoryLike(rs.getInt("RECOMMEND"));
+//                    vo.setStoryLike(rs.getInt("RECOMMEND"));
                     vo.setRegTime(rs.getString("REG_TIME"));
 
                     // Study Info
@@ -143,8 +145,12 @@ public class StoryDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+        Common.close(rs);
+        Common.close(pStmt);
+        Common.close(conn);
+
         return vo;
     }
 
