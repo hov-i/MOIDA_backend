@@ -52,7 +52,7 @@ public class StoryController {
 
 
     // Story 작성 (Insert)
-    @GetMapping("/story/post/insert")
+    @PostMapping("/story/post/insert")
     public ResponseEntity<Boolean> storyRegister(@RequestBody Map<String, String> regData) {
         int getUserId = Integer.parseInt(regData.get("userId"));
         int getStudyId = Integer.parseInt(regData.get("studyId"));
