@@ -27,7 +27,7 @@ public class StoryDAO {
                 conn = Common.getConnection();
                 stmt = conn.createStatement();
 
-            String sql = "SELECT S.STORY_ID, S.IMG_URL, S.TITLE, SI.STUDY_NAME " +
+            String sql = "SELECT S.STORY_ID, S.IMG_URL, SI.STUDY_CATEGORY, S.TITLE, SI.STUDY_NAME " +
                          "FROM STORY S " +
                          "JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID " +
                          "ORDER BY STORY_ID DESC";
@@ -36,12 +36,14 @@ public class StoryDAO {
 
             while (rs.next()) {
                 int storyId = rs.getInt("STORY_ID");
+                String category = rs.getString("STUDY_CATEGORY");
                 String imgUrl = rs.getString("IMG_URL");
                 String title  = rs.getString("TITLE");
                 String studyName = rs.getString("STUDY_NAME");
 
                 StoryVO vo = new StoryVO();
 
+                vo.setCategory(category);
                 vo.setStoryId(storyId);
                 vo.setImgUrl(imgUrl);
                 vo.setTitle(title);
@@ -66,7 +68,7 @@ public class StoryDAO {
             StringBuilder sql = new StringBuilder();
 
             sql.append("SELECT * FROM ( SELECT T.*, ROWNUM AS RN FROM ( ");
-            sql.append("SELECT S.*, S.IMG_URL, S.TITLE, SI.STUDY_NAME ");
+            sql.append("SELECT S.*, S.IMG_URL, S.TITLE, SI.STUDY_NAME, SI.STUDY_CATEGORY ");
             sql.append("FROM STORY S");
             sql.append("JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID ");
             sql.append("WHERE STORY_ID < ? ");
