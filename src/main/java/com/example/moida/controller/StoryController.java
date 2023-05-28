@@ -34,6 +34,16 @@ public class StoryController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
+    // 스토리 view increase (조회수)
+    @PostMapping("/story/view")
+    public ResponseEntity<Boolean> storyViewIncrease(@RequestParam(value="storyId") int storyId) {
+        System.out.println(storyId);
+        StoryDAO dao = new StoryDAO();
+        boolean result = dao.viewIncrease(storyId);
+        if (result) System.out.println(HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     // Story{userId} 게시글
     @GetMapping("/story/{storyId}")
     public ResponseEntity<StoryVO> viewStory(@PathVariable int storyId) throws SQLException  {

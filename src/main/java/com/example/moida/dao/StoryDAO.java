@@ -247,6 +247,27 @@ public class StoryDAO {
 //    }
 
 
+    // 조회수 증가
+    public boolean viewIncrease(int storyId) {
+        int result = 0;
+        String sql = "UPDATE STORY SET VIEWS = VIEWS + 1 WHERE STORY_ID = ? ";
+        try {
+            conn = Common.getConnection();
+            pStmt = conn.prepareStatement(sql);
+            pStmt.setInt(1, storyId);
+            result = pStmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pStmt);
+        Common.close(conn);
+
+        if (result == 1) {
+            System.out.println("조회수 1증가");
+            return true;
+        } else return false;
+    }
+
     // 스토리 조회
     // 스토리에 보여야 하는것들
     // 스토리 제목, 내용, 이미지, 스터디이름, 스터디 태그, 작성자 이름
