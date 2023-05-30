@@ -64,6 +64,7 @@ public class StoryDAO {
         } return list;
     }
 
+
     // LastID 이전 게시물 120개
     public List<StoryVO> StoryVOList(int lastId) {
         List<StoryVO> list = new ArrayList<>();
@@ -109,6 +110,7 @@ public class StoryDAO {
         System.out.println("lastId = " + lastId);
         return list;
     }
+
     // 스토리 메인  - 전체 리스트 초기 게시물 132개
 //    public List<StoryVO> StoryVOList() {
 //        List<StoryVO> list = new ArrayList<>();
@@ -273,10 +275,12 @@ public class StoryDAO {
     // 스토리 제목, 내용, 이미지, 스터디이름, 스터디 태그, 작성자 이름
     public StoryVO getStoryById(int storyId) {
         StoryVO vo = new StoryVO();
-        String sql = "SELECT S.*, U.IMG AS USER_IMG_URL, U.NICKNAME, SI.STUDY_PROFILE, SI.STUDY_NAME, SI.STUDY_INTRO " +
+        String sql = "SELECT S.*, U.IMG AS USER_IMG_URL, U.NICKNAME, SI.STUDY_PROFILE, SI.STUDY_NAME, SI.STUDY_INTRO, T.TAG_NAME " +
                 "FROM STORY S " +
                 "INNER JOIN USER_INFO U ON S.USER_ID = U.USER_ID " +
                 "JOIN STUDY_INFO SI ON S.STUDY_ID = SI.STUDY_ID " +
+                "JOIN STUDY_TAG_REL STR ON S.STUDY_ID = STR.STUDY_ID " +
+                "JOIN TAGS T ON STR.TAG_ID = T.TAG_ID " +
                 "WHERE STORY_ID = " + storyId;
         try {
             conn = Common.getConnection();
@@ -289,7 +293,7 @@ public class StoryDAO {
                 vo.setUserId(rs.getInt("USER_ID"));
                 vo.setUserImgUrl(rs.getString("USER_IMG_URL"));
                 vo.setNickname(rs.getString("NICKNAME"));
-//                    vo.setStoryLike(rs.getInt("RECOMMEND"));
+//                vo.setStoryLike(rs.getInt("RECOMMEND"));
                 vo.setRegTime(rs.getString("REG_TIME"));
 
                 // Study Info
@@ -297,6 +301,7 @@ public class StoryDAO {
                 vo.setStudyProfile(rs.getString("STUDY_PROFILE"));
                 vo.setStudyName(rs.getString("STUDY_NAME"));
                 vo.setStudyIntro(rs.getString("STUDY_INTRO"));
+                vo.setStudyTag(rs.getString("TAG_NAME"));
 
                 vo.setImgUrl(rs.getString("IMG_URL"));
                 vo.setContents(rs.getString("CONTENTS"));

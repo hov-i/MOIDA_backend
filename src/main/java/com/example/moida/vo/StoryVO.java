@@ -23,11 +23,12 @@ public class StoryVO {
 
     private String userImgUrl; // join 으로 사용할 예정
     private String nickname; // join 으로 사용할 예정
-//    private int storyLike;
+    private int storyLike;
     private String regTime;
     private int studyId; // join 으로 사용할 예정
     private String studyProfile; // join 으로 사용할 예정
     private String studyIntro; // join 으로 사용할 예정
+    private String studyTag; // join 으로 사용할 예정
     private String contents;
     private List<StoryCommentVO> comments; // join 으로 사용할 예정
 

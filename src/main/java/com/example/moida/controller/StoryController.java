@@ -49,14 +49,11 @@ public class StoryController {
     public ResponseEntity<StoryVO> viewStory(@PathVariable int storyId) throws SQLException  {
         System.out.println("Story Id : " + storyId);
         StoryDAO storyDAO = new StoryDAO();
-//        StoryCommentDAO StoryCommentDAO = new StoryCommentDAO();
+        StoryCommentDAO StoryCommentDAO = new StoryCommentDAO();
         StoryVO story = storyDAO.getStoryById(storyId);
-//        List<StoryCommentVO> comments = StoryCommentDAO.getCommentsByStoryId(storyId);
+        List<StoryCommentVO> comments = StoryCommentDAO.getCommentsByStoryId(storyId);
+        story.setComments(comments);
 
-//        story.setComments(comments);
-//        if (story.getStudyId() < 1 || !(studyId==story.getStudyId())) {
-//            return ResponseEntity.notFound().build();
-//        }
         return new ResponseEntity<>(story, HttpStatus.OK);
     }
 
